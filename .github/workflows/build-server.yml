@@ -29,12 +29,12 @@ jobs:
           password: ${ secrets.DOCKER_PASSWORD }}          
       -
         name: Run Buildx
+        if: success() && github.event_name != 'pull_request'        
         run: |
           docker buildx build \
-            --platform linux/amd64,linux/arm/v7 \
+            --platform linux/arm/v7 \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
             --cache-to "type=local,dest=/tmp/.buildx-cache" \
             --output "type=image,push=true" \
             -t fergalmoran/bitchmin-api \
             --file ./server/Dockerfile ./server
-
