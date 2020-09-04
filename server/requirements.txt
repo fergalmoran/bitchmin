@@ -1,0 +1,16 @@
+Flask
+Flask-Cors
+Flask-SQLAlchemy
+Flask_Migrate
+flask_jwt_extended
+sqlalchemy_utils
+phue
+python-dotenv
+PyJWT
+psycopg2-binary==2.8.5
+Psycopg2
+pylint
+werkzeug
+
+IPy
+pydig

@@ -1,0 +1,29 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true
+    },
+    "workbench.colorTheme": "Community Material Theme Darker",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#b85b19",
+        "activityBar.activeBorder": "#1bc461",
+        "activityBar.background": "#b85b19",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#1bc461",
+        "activityBarBadge.foreground": "#15202b",
+        "statusBar.background": "#8b4513",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#b85b19",
+        "titleBar.activeBackground": "#8b4513",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#8b451399",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.color": "#8B4513",
+    "python.pythonPath": "/home/fergalm/.virtualenvs/BitchMin/bin/python"
+}
