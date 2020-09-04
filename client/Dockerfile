@@ -2,7 +2,7 @@ FROM node:14-stretch as build-stage
 
 WORKDIR /app
 COPY package*.json ./
-RUN yarn install --production
+RUN yarn install
 COPY . .
 COPY .eslintrc.js ./
 RUN yarn build --production
