@@ -47,46 +47,49 @@ import dayjs from 'dayjs';
 import { decodeJwtToken, titleCase } from '@/utils';
 
 @Component({
-    components: {},
-    filters: {
-        narrativeText(value: string) {
-            switch (value) {
-                case 'iat':
-                    return 'Issued At';
-                case 'nbf':
-                    return 'Not valid before';
-                case 'jti':
-                    return 'JWT Id';
-                case 'exp':
-                    return 'Expires at';
-                default:
-                    return titleCase(value);
-            }
-        },
-        transformValue(value: string, propertyName: string) {
-            if (isNaN(Number(value)) || propertyName === 'identity') {
-                return value;
-            }
-            const d = dayjs(new Date(Number(value) * 1000));
-            return `${value} : ${d.format('DD/MM/YYYY HH:mm')}`;
-        },
+  components: {},
+  filters: {
+    narrativeText(value: string) {
+      switch (value) {
+        case 'iat':
+          return 'Issued At';
+        case 'nbf':
+          return 'Not valid before';
+        case 'jti':
+          return 'JWT Id';
+        case 'exp':
+          return 'Expires at';
+        default:
+          return titleCase(value);
+      }
     },
+    transformValue(value: string, propertyName: string) {
+      if (isNaN(Number(value)) || propertyName === 'identity') {
+        return value;
+      }
+      const d = dayjs(new Date(Number(value) * 1000));
+      return `${value} : ${d.format('DD/MM/YYYY HH:mm')}`;
+    },
+  },
 })
 export default class JwtDecoder extends Vue {
     token = '';
+
     error = '';
+
     decoded: any = null;
+
     tokenChanged() {
-        this.error = '';
+      this.error = '';
+      this.decoded = null;
+      try {
+        const token = decodeJwtToken(this.token);
+        console.log('JwtDecoder', 'tokenChanged', token);
+        this.decoded = token;
+      } catch (e) {
+        this.error = 'Invalid JWT Token';
         this.decoded = null;
-        try {
-            const token = decodeJwtToken(this.token);
-            console.log('JwtDecoder', 'tokenChanged', token);
-            this.decoded = token;
-        } catch (e) {
-            this.error = 'Invalid JWT Token';
-            this.decoded = null;
-        }
+      }
     }
 }
 </script>

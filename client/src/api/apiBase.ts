@@ -1,68 +1,68 @@
 import axios, {
-    AxiosError,
-    AxiosInstance,
-    AxiosRequestConfig,
-    AxiosResponse,
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
 } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import store from '@/store';
 
 export class Api {
     refreshing = false;
+
     api: AxiosInstance;
+
     tokenRefreshCallback = (failedRequest: any) => {
-        this.refreshing = true;
-        return this.api
-            .post(`${process.env.VUE_APP_API_SERVER}/auth/token/refresh`)
-            .then((tokenRefreshResponse) => {
-                this.refreshing = false;
-                store.dispatch;
-                localStorage.setItem(
-                    'access_token',
-                    tokenRefreshResponse.data.accessToken
-                );
-                localStorage.setItem(
-                    'refresh_token',
-                    tokenRefreshResponse.data.refreshToken
-                );
-                failedRequest.response.config.headers['Authorization'] =
-                    'Bearer ' + tokenRefreshResponse.data.accessToken;
-                store.dispatch('updateToken', {
-                    accessToken: tokenRefreshResponse.data.accessToken,
-                    refreshToken: tokenRefreshResponse.data.refreshToken,
-                });
-                return Promise.resolve();
-            });
+      this.refreshing = true;
+      return this.api
+        .post(`${process.env.VUE_APP_API_SERVER}/auth/token/refresh`)
+        .then((tokenRefreshResponse) => {
+          this.refreshing = false;
+          store.dispatch;
+          localStorage.setItem(
+            'access_token',
+            tokenRefreshResponse.data.accessToken,
+          );
+          localStorage.setItem(
+            'refresh_token',
+            tokenRefreshResponse.data.refreshToken,
+          );
+          failedRequest.response.config.headers.Authorization = `Bearer ${tokenRefreshResponse.data.accessToken}`;
+          store.dispatch('updateToken', {
+            accessToken: tokenRefreshResponse.data.accessToken,
+            refreshToken: tokenRefreshResponse.data.refreshToken,
+          });
+          return Promise.resolve();
+        });
     };
 
     public constructor(config?: AxiosRequestConfig) {
-        this.api = axios.create(config);
-        this.__setupInterceptors();
+      this.api = axios.create(config);
+      this.__setupInterceptors();
 
-        this.getUri = this.getUri.bind(this);
-        this.request = this.request.bind(this);
-        this.get = this.get.bind(this);
-        this.delete = this.delete.bind(this);
-        this.head = this.head.bind(this);
-        this.post = this.post.bind(this);
-        this.put = this.put.bind(this);
-        this.patch = this.patch.bind(this);
+      this.getUri = this.getUri.bind(this);
+      this.request = this.request.bind(this);
+      this.get = this.get.bind(this);
+      this.delete = this.delete.bind(this);
+      this.head = this.head.bind(this);
+      this.post = this.post.bind(this);
+      this.put = this.put.bind(this);
+      this.patch = this.patch.bind(this);
     }
-    _getAccessToken = () =>
-        this.refreshing
-            ? localStorage.getItem('refresh_token')
-            : localStorage.getItem('access_token');
+
+    _getAccessToken = () => (this.refreshing
+      ? localStorage.getItem('refresh_token')
+      : localStorage.getItem('access_token'));
 
     private __setupInterceptors(): void {
-        // Use interceptor to inject the token to requests
-        this.api.interceptors.request.use((request) => {
-            request.headers[
-                'Authorization'
-            ] = `Bearer ${this._getAccessToken()}`;
-            return request;
-        });
-        createAuthRefreshInterceptor(this.api, this.tokenRefreshCallback);
+      // Use interceptor to inject the token to requests
+      this.api.interceptors.request.use((request) => {
+        request.headers.Authorization = `Bearer ${this._getAccessToken()}`;
+        return request;
+      });
+      createAuthRefreshInterceptor(this.api, this.tokenRefreshCallback);
     }
+
     /**
      * Get Uri
      *
@@ -71,7 +71,7 @@ export class Api {
      * @memberof Api
      */
     public getUri(config?: AxiosRequestConfig): string {
-        return this.api.getUri(config);
+      return this.api.getUri(config);
     }
 
     /**
@@ -96,9 +96,9 @@ export class Api {
      *
      */
     public request<T, R = AxiosResponse<T>>(
-        config: AxiosRequestConfig
+      config: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.request(config);
+      return this.api.request(config);
     }
 
     /**
@@ -113,10 +113,10 @@ export class Api {
      * @memberof Api
      */
     public get<T, R = AxiosResponse<T>>(
-        url: string,
-        config?: AxiosRequestConfig
+      url: string,
+      config?: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.get(url, config);
+      return this.api.get(url, config);
     }
 
     /**
@@ -131,10 +131,10 @@ export class Api {
      * @memberof Api
      */
     public delete<T, R = AxiosResponse<T>>(
-        url: string,
-        config?: AxiosRequestConfig
+      url: string,
+      config?: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.delete(url, config);
+      return this.api.delete(url, config);
     }
 
     /**
@@ -149,10 +149,10 @@ export class Api {
      * @memberof Api
      */
     public head<T, R = AxiosResponse<T>>(
-        url: string,
-        config?: AxiosRequestConfig
+      url: string,
+      config?: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.head(url, config);
+      return this.api.head(url, config);
     }
 
     /**
@@ -170,11 +170,11 @@ export class Api {
      * @memberof Api
      */
     public post<T, B, R = AxiosResponse<T>>(
-        url: string,
-        data?: B,
-        config?: AxiosRequestConfig
+      url: string,
+      data?: B,
+      config?: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.post(url, data, config);
+      return this.api.post(url, data, config);
     }
 
     /**
@@ -191,11 +191,11 @@ export class Api {
      * @memberof Api
      */
     public put<T, B, R = AxiosResponse<T>>(
-        url: string,
-        data?: B,
-        config?: AxiosRequestConfig
+      url: string,
+      data?: B,
+      config?: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.put(url, data, config);
+      return this.api.put(url, data, config);
     }
 
     /**
@@ -212,11 +212,11 @@ export class Api {
      * @memberof Api
      */
     public patch<T, B, R = AxiosResponse<T>>(
-        url: string,
-        data?: B,
-        config?: AxiosRequestConfig
+      url: string,
+      data?: B,
+      config?: AxiosRequestConfig,
     ): Promise<R> {
-        return this.api.patch(url, data, config);
+      return this.api.patch(url, data, config);
     }
 
     /**
@@ -227,10 +227,10 @@ export class Api {
      * @memberof Api
      */
     public success<T>(response: AxiosResponse<T>): T {
-        return response.data;
+      return response.data;
     }
 
     public error(error: AxiosError<Error>) {
-        throw error;
+      throw error;
     }
 }

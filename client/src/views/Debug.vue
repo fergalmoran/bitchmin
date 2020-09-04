@@ -8,13 +8,13 @@ import { Component, Vue } from 'vue-property-decorator';
 import { debugApi } from '@/api';
 
 @Component({
-    components: {},
+  components: {},
 })
 export default class Lights extends Vue {
-        async mounted() {
-        this.lights = await debugApi.getDebug();
-        this.currentLight = this.lights[0];
-        console.log('Lights', 'mounted', 'lights', this.lights);
-    }
+  async mounted() {
+    this.lights = await debugApi.getDebug();
+    this.currentLight = this.lights[0];
+    console.log('Lights', 'mounted', 'lights', this.lights);
+  }
 }
 </script>

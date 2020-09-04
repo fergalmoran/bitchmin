@@ -26,20 +26,21 @@ import { Component, Vue } from 'vue-property-decorator';
 import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 import DnsRecordsList from '@/components/Dns/DnsRecordsList.vue';
 import DnsUpdateForm from '@/components/Dns/DnsUpdateForm.vue';
-import { DnsRecord } from '@/models/interfaces/dnsRecord';
+import { DnsRecord } from '@/models';
 import { dnsApi } from '@/api';
 
 @Component({
-    components: {
-        HelloWorld,
-        DnsRecordsList,
-        DnsUpdateForm,
-    },
+  components: {
+    HelloWorld,
+    DnsRecordsList,
+    DnsUpdateForm,
+  },
 })
 export default class BitchNS extends Vue {
     dnsRecords: DnsRecord[] = [];
+
     async mounted() {
-        this.dnsRecords = await dnsApi.getDnsRecords();
+      this.dnsRecords = await dnsApi.getDnsRecords();
     }
 }
 </script>

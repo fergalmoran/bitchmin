@@ -45,70 +45,73 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, PropSync, Vue,
+} from 'vue-property-decorator';
 import { dnsApi } from '@/api';
-import { DnsRecord } from '@/models/interfaces/dnsRecord';
+import { DnsRecord } from '@/models/dnsRecord';
 import dayjs from 'dayjs';
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 @Component({
-    name: 'DnsRecordsList',
-    filters: {
-        formatDate: (date: string) => {
-            if (!date) {
-                return null;
-            }
-            const d = dayjs(date);
-            return d.format('L LT');
-        },
+  name: 'DnsRecordsList',
+  filters: {
+    formatDate: (date: string) => {
+      if (!date) {
+        return null;
+      }
+      const d = dayjs(date);
+      return d.format('L LT');
     },
+  },
 })
 export default class DnsRecordsList extends Vue {
     @PropSync('inrecords')
     public records!: DnsRecord[];
 
     private callInProgress = false;
+
     errorMessage = '';
 
     async refreshRecord(host: DnsRecord) {
-        this.callInProgress = true;
-        console.log('DnsRecordsList', 'refreshRecord', host);
-        const result = await dnsApi.refreshDnsRecord(host.host, host.ip);
-        if (result.status === 'success') {
-            Vue.toasted.success('Refreshed successfully');
-        }
-        this.callInProgress = false;
+      this.callInProgress = true;
+      console.log('DnsRecordsList', 'refreshRecord', host);
+      const result = await dnsApi.refreshDnsRecord(host.host, host.ip);
+      if (result.status === 'success') {
+        Vue.toasted.success('Refreshed successfully');
+      }
+      this.callInProgress = false;
     }
 
     async verifyRecord(record: DnsRecord) {
-        this.callInProgress = true;
-        const result = await dnsApi.verifyDnsRecord(record.host, record.ip);
-        if (result.status === 'success') {
-            Vue.toasted.success(result.payload || 'Record checks out');
-        } else {
-            this.errorMessage = result.payload || 'Error checking record';
-            Vue.toasted.error(this.errorMessage);
-        }
-        this.callInProgress = false;
+      this.callInProgress = true;
+      const result = await dnsApi.verifyDnsRecord(record.host, record.ip);
+      if (result.status === 'success') {
+        Vue.toasted.success(result.payload || 'Record checks out');
+      } else {
+        this.errorMessage = result.payload || 'Error checking record';
+        Vue.toasted.error(this.errorMessage);
+      }
+      this.callInProgress = false;
     }
 
     async deleteRecord(record: DnsRecord) {
-        this.callInProgress = true;
-        const result = await dnsApi.deleteDnsRecord(record.host);
-        if (result === 200) {
-            Vue.toasted.success('Record deleted successfully');
-            this.records = this.records.filter((t) => {
-                return t.host !== record.host;
-            });
-            console.log('DnsRecordsList', 'delete', this.records);
-        }
-        this.callInProgress = false;
+      this.callInProgress = true;
+      const result = await dnsApi.deleteDnsRecord(record.host);
+      if (result === 200) {
+        Vue.toasted.success('Record deleted successfully');
+        this.records = this.records.filter((t) => t.host !== record.host);
+        console.log('DnsRecordsList', 'delete', this.records);
+      }
+      this.callInProgress = false;
     }
+
     mounted() {
-        dayjs.extend(localizedFormat);
-        console.log('DnsRecordsList', 'mounded_after', this.records);
+      dayjs.extend(localizedFormat);
+      console.log('DnsRecordsList', 'mounded_after', this.records);
     }
 }
 </script>

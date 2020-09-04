@@ -48,17 +48,14 @@
 /* eslint-disable no-var */
 declare var require: (moduleId: string) => any;
 /* eslint-disable @typescript-eslint/no-var-requires */
-var colors = require('vue-color');
 
 import { Component, Vue } from 'vue-property-decorator';
 import { lightsApi } from '@/api';
-import { Light } from '@/models/interfaces';
+import { Light } from '@/models';
 import { debounce } from 'decko';
 
 @Component({
-    components: {
-        'compact-picker': colors.Compact,
-    },
+
 })
 export default class Lights extends Vue {
     error = '';

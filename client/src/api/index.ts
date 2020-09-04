@@ -4,4 +4,6 @@ import { dnsApi } from './dnsApi';
 import { lightsApi } from './lightsApi';
 import { debugApi } from './debugApi';
 
-export { authApi, userApi, dnsApi, lightsApi, debugApi };
+export {
+  authApi, userApi, dnsApi, lightsApi, debugApi,
+};

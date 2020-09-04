@@ -30,68 +30,70 @@
 <script lang="ts">
 import { Component, PropSync, Vue } from 'vue-property-decorator';
 import { dnsApi } from '@/api';
-import { DnsRecord } from '@/models/interfaces/dnsRecord';
+import { DnsRecord } from '@/models/dnsRecord';
 import { DataApiResult } from '@/api/apiResult';
 
 @Component({
-    name: 'DnsUpdateForm',
+  name: 'DnsUpdateForm',
 })
 export default class DnsUpdateForm extends Vue {
     msg = '';
+
     error = '';
+
     valid = true;
+
     lazy = false;
 
     hostName = '';
+
     hostNameRules = [
-        (v: string) => !!v || 'Host name is required',
-        (v: string) =>
-            (v && v.length < 253) || 'Hostname cannot exceed 253 characters',
+      (v: string) => !!v || 'Host name is required',
+      (v: string) => (v && v.length < 253) || 'Hostname cannot exceed 253 characters',
     ];
 
     ipAddress = '';
+
     ipAddressRules = [
-        (v: string) => !!v || 'IP address is required',
-        (v: string) =>
-            /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
-                v
-            ) || 'Invalid IP Address',
-        (v: string) =>
-            (v && v.length < 16) || 'IP address cannot exceed 16 characters',
+      (v: string) => !!v || 'IP address is required',
+      (v: string) => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+        v,
+      ) || 'Invalid IP Address',
+      (v: string) => (v && v.length < 16) || 'IP address cannot exceed 16 characters',
     ];
 
     @PropSync('inrecords')
     public records!: DnsRecord[];
 
     validate() {
-        // this.$refs.form.validate();
+      // this.$refs.form.validate();
     }
 
     processUpdate() {
-        dnsApi
-            .updateDnsRecord(this.hostName, this.ipAddress)
-            .then((r: DataApiResult<DnsRecord>) => {
-                if (r.status === 'success') {
-                    this.error = '';
-                    Vue.toasted.success('Update successful');
-                    if (r.payload) {
-                        this.records.unshift(r.payload);
-                        this.$emit('update:inrecords', this.records);
-                    }
-                    this.ipAddress = '';
-                    this.hostName = '';
-                } else {
-                    this.error = 'Unable to add DNS record';
-                }
-            })
-            .catch((e) => {
-                console.log('DnsUpdateForm', 'error', e);
-                if (e.response && e.response.data.payload) {
-                    this.error = e.response.data.payload;
-                } else {
-                    this.error = e;
-                }
-            });
+      dnsApi
+        .updateDnsRecord(this.hostName, this.ipAddress)
+        .then((r: DataApiResult<DnsRecord>) => {
+          if (r.status === 'success') {
+            this.error = '';
+            Vue.toasted.success('Update successful');
+            if (r.payload) {
+              this.records.unshift(r.payload);
+              this.$emit('update:inrecords', this.records);
+            }
+            this.ipAddress = '';
+            this.hostName = '';
+          } else {
+            this.error = 'Unable to add DNS record';
+          }
+        })
+        .catch((e: any) => {
+          console.log('DnsUpdateForm', 'error', e);
+          if (e.response && e.response.data.payload) {
+            this.error = e.response.data.payload;
+          } else {
+            this.error = e;
+          }
+        });
     }
 }
 </script>

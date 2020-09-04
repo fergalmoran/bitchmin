@@ -1,6 +1,5 @@
 FROM node:14-stretch as build-stage
 
-
 WORKDIR /app
 COPY package*.json ./
 RUN npm install

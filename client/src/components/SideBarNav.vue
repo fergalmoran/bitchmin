@@ -30,12 +30,13 @@ import { Component, Vue } from 'vue-property-decorator';
 @Component
 export default class SideBarNav extends Vue {
     drawer = null;
+
     items = [
-        { title: 'Debug', icon: 'mdi-bug', route: 'debug' },
-        { title: 'DNS Config', icon: 'mdi-dns', route: 'bitchns' },
-        { title: 'IP Tools', icon: 'mdi-ip', route: 'myip' },
-        { title: 'JWT Decoder', icon: 'mdi-code-array', route: 'jwt' },
-        { title: 'Lights', icon: 'mdi-lightbulb', route: 'lights' },
+      { title: 'Debug', icon: 'mdi-bug', route: 'debug' },
+      { title: 'DNS Config', icon: 'mdi-dns', route: 'bitchns' },
+      { title: 'IP Tools', icon: 'mdi-ip', route: 'myip' },
+      { title: 'JWT Decoder', icon: 'mdi-code-array', route: 'jwt' },
+      { title: 'Lights', icon: 'mdi-lightbulb', route: 'lights' },
     ];
 }
 </script>
