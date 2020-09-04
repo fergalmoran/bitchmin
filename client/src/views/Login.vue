@@ -54,7 +54,7 @@ import store from '@/store';
     components: {}
 })
 export default class Login extends Vue {
-    loading: false;
+    loading = false;
     error = false;
     rules = {
         required: (value: string) => !!value || 'Required.'
@@ -62,8 +62,8 @@ export default class Login extends Vue {
     email = '';
 
     password = '';
-
-    errorMsg = '';
+    showResult = false;
+    result = '';
 
     authenticate() {
         if (!this.email || !this.password) {
@@ -76,11 +76,11 @@ export default class Login extends Vue {
             .then(() => {
                 console.log('Login', 'store_dispatch_login');
                 this.$router.push('/');
-            }).error(() => {
-            this.error = true;
-            this.result = 'Email or Password is incorrect.';
-            this.showResult = true;
-        });
+            }).catch(() => {
+                this.error = true;
+                this.result = 'Email or Password is incorrect.';
+                this.showResult = true;
+            });
     }
 
     register() {
