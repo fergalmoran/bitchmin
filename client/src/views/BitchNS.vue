@@ -1,22 +1,24 @@
 <template>
-    <div>
-        <div class="page-header">
-            <h3 class="page-title">
-                <span class="page-title-icon bg-gradient-primary text-white mr-2">
-                    <i class="mdi mdi-dns"></i>
-                </span> BitchMints Dynamic DNS Stuff
-            </h3>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 grid-margin stretch-card">
-                <DnsUpdateForm :inrecords.sync="dnsRecords"/>
-            </div>
-            <div class="col-md-6 grid-margin stretch-card">
-                <DnsRecordsList :inrecords.sync="dnsRecords"/>
-            </div>
-        </div>
-    </div>
+    <v-container id="dashboard" fluid tag="section">
+        <v-row>
+            <v-col cols="12" sm="4" lg="4">
+                <DnsUpdateForm :inrecords="dnsRecords" />
+            </v-col>
+            <v-col cols="12" sm="8" lg="8">
+                <DnsRecordsList :inrecords="dnsRecords" />
+            </v-col>
+        </v-row>
+    </v-container>
+    <!-- <v-container fluid grid-list-xl>
+        <v-layout row wrap>
+            <v-flex sm4 xs4>
+                <DnsUpdateForm :inrecords="dnsRecords" />
+            </v-flex>
+            <v-flex d-flex lg4 sm6 xs12>
+                <DnsRecordsList :inrecords="dnsRecords" />
+            </v-flex>
+        </v-layout>
+    </v-container>-->
 </template>
 
 <script lang="ts">

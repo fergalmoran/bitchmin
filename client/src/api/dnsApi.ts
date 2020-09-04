@@ -2,7 +2,6 @@ import { Api } from '@/api/apiBase';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { apiConfig } from '@/api/config';
 import { ApiResult, DataApiResult } from '@/api/apiResult';
-import { DnsUpdate } from '@/models/interfaces';
 import { DnsRecord } from '@/models/interfaces/dnsRecord';
 
 export class DnsApi extends Api {

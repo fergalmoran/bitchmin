@@ -1,50 +1,44 @@
 <template>
-    <div>
-        <div class="page-header">
-            <h3 class="page-title">JWT Token Decoder</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <form class="forms-sample">
-                            <div class="form-group">
-                                <label for="exampleInputUsername1">Enter JWT Token</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    v-model="token"
-                                    @keydown="tokenChanged"
-                                    placeholder="JWT Token"
-                                />
-                            </div>
-                            <transition name="fade">
-                                <div v-if="error" class="alert alert-danger" role="alert">{{error}}</div>
-                            </transition>
-                        </form>
-                        <!-- <table class="table table-bordered" v-if="decoded.iat"> -->
-                        <div class="row" v-if="decoded">
-                            <div
-                                class="col-md-6"
-                                v-for="(value, propertyName) in decoded"
-                                :key="propertyName"
-                            >
-                                <div class="wrapper ml-3">
-                                    <dl>
-                                        <dt>
-                                            {{propertyName | narrativeText}}
-                                            <small>({{propertyName}})</small>
-                                        </dt>
-                                        <dd>{{value | transformValue(propertyName)}}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <v-row>
+        <v-col cols="12" class="pa-4" sm="5" lg="5">
+            <v-card class="elevation-12">
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title class="headline">JWT Token Decoder</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-card-text>
+                    <v-form ref="form">
+                        <v-text-field
+                            v-model="token"
+                            label="JWT Token"
+                            @keydown="tokenChanged"
+                            required
+                        ></v-text-field>
+                    </v-form>
+                    <transition name="fade">
+                        <div v-if="error" class="alert alert-danger" role="alert">{{error}}</div>
+                    </transition>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col cols="12" class="pa-4" sm="7" lg="7">
+            <v-row>
+                <v-col
+                    cols="12"
+                    sm="6"
+                    v-for="(value, propertyName) in decoded"
+                    :key="propertyName"
+                >
+                    <v-card class="pa-2">
+                        <v-card-title>{{propertyName | narrativeText}}</v-card-title>
+                        <v-card-subtitle>({{propertyName}})</v-card-subtitle>
+                        <v-card-text>{{value | transformValue(propertyName)}}</v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </v-col>
+    </v-row>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';

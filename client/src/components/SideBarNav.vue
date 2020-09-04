@@ -1,54 +1,27 @@
 <template>
-    <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-            <li class="nav-item nav-profile">
-                <router-link to="/" class="nav-link">
-                    <div class="nav-profile-image">
-                        <img src="https://placebeard.it/128x128" alt="profile" />
-                        <span class="login-status online"></span>
-                        <!--change to offline or busy as needed-->
-                    </div>
-                    <div class="nav-profile-text d-flex flex-column">
-                        <span
-                            class="font-weight-bold mb-2"
-                        >{{ this.$store.state.user.fullName }}</span>
-                        <span class="text-secondary text-small">Beard Manager</span>
-                    </div>
-                    <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
-                </router-link>
-            </li>
-            <li class="nav-item" v-if="false">
-                <router-link class="nav-link" to="/debug">
-                    <span class="menu-title">Debug</span>
-                    <i class="mdi mdi-bug menu-icon"></i>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" to="/bitchns">
-                    <span class="menu-title">DNS Config</span>
-                    <i class="mdi mdi-dns menu-icon"></i>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" to="/myip">
-                    <span class="menu-title">My IP Address</span>
-                    <i class="mdi mdi-ip menu-icon"></i>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" to="/jwt">
-                    <span class="menu-title">JWT Decoder</span>
-                    <i class="mdi mdi-code-array menu-icon"></i>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" to="/lights">
-                    <span class="menu-title">Lights</span>
-                    <i class="mdi mdi-lightbulb menu-icon"></i>
-                </router-link>
-            </li>
-        </ul>
-    </nav>
+    <v-navigation-drawer v-model="drawer" app clipped color="grey lighten-4">
+        <v-list dense class="grey lighten-4">
+            <template v-for="(item, i) in items">
+                <v-row v-if="item.heading" :key="i" align="center">
+                    <v-col cols="6">
+                        <v-subheader v-if="item.heading">{{ item.heading }}</v-subheader>
+                    </v-col>
+                    <v-col cols="6" class="text-right">
+                        <v-btn small text>edit</v-btn>
+                    </v-col>
+                </v-row>
+                <v-divider v-else-if="item.divider" :key="i" dark class="my-4"></v-divider>
+                <v-list-item v-else :key="i" link @click="$router.push({ path: item.route })">
+                    <v-list-item-action>
+                        <v-icon>{{ item.icon }}</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title class="grey--text">{{ item.title }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </template>
+        </v-list>
+    </v-navigation-drawer>
 </template>
 
 <script>
@@ -56,6 +29,13 @@ import { Component, Vue } from 'vue-property-decorator';
 
 @Component
 export default class SideBarNav extends Vue {
-
+    drawer = null;
+    items = [
+        { title: 'Debug', icon: 'mdi-bug', route: 'debug' },
+        { title: 'DNS Config', icon: 'mdi-dns', route: 'bitchns' },
+        { title: 'IP Tools', icon: 'mdi-ip', route: 'myip' },
+        { title: 'JWT Decoder', icon: 'mdi-code-array', route: 'jwt' },
+        { title: 'Lights', icon: 'mdi-lightbulb', route: 'lights' },
+    ];
 }
 </script>
