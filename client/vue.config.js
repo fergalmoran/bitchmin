@@ -2,10 +2,11 @@ module.exports = {
     pluginOptions: {
         'style-resources-loader': {
             preProcessor: 'scss',
-            patterns: []
-        }
+            patterns: [],
+        },
     },
     configureWebpack: {
-        devtool: "source-map"
-    }
-}
+        devtool: 'source-map',
+    },
+    transpileDependencies: ['vuetify'],
+};
