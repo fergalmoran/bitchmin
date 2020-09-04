@@ -5,18 +5,20 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 import Toasted from 'vue-toasted';
+import VueClipboard from 'vue-clipboard2';
+
 
 Vue.config.productionTip = false;
-
+Vue.use(VueClipboard);
 Vue.use(Toasted, {
-  theme: 'toasted-primary',
-  position: 'top-right',
-  duration: 2000,
+    theme: 'toasted-primary',
+    position: 'top-right',
+    duration: 2000
 });
 
 new Vue({
-  router,
-  store,
-  vuetify,
-  render: (h) => h(App),
+    router,
+    store,
+    vuetify,
+    render: (h) => h(App)
 }).$mount('#app');
