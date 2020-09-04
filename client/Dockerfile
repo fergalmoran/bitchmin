@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+COPY .eslintrc.js ./
 RUN npm run build
 
 # Create the container from the alpine linux image
