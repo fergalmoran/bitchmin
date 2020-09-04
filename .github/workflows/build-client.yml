@@ -2,7 +2,7 @@ name: build-client
 
 on:
   push:
-    branches: master
+    branches: trunk
 jobs:
   buildx:
     runs-on: ubuntu-latest
