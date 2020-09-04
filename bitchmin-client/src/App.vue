@@ -1,32 +1,41 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app id="bitchmin">
+    <TopBarNav  v-if="isAuthenticated"/>
+    <SideBarNav v-if="isAuthenticated" />
+    <v-main>
+      <v-container fluid>
+        <router-view></router-view>
+      </v-container>
+    </v-main>
+    <Footer />
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import TopBarNav from '@/components/TopBarNav.vue'; // @ is an alias to /src
+import SideBarNav from '@/components/SideBarNav.vue'; // @ is an alias to /src
+import Footer from '@/components/Footer.vue'; // @ is an alias to /src
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+@Component({
+  components: {
+    TopBarNav,
+    SideBarNav,
+    Footer,
+  },
+})
+export default class App extends Vue {
+  async mounted() {
+    this.$store.dispatch('loadInitialState');
   }
+
+  get isAuthenticated() {
+    return this.$store.getters.isLoggedIn;
+  }
+}
+</script>
+<style>
+#keep .v-navigation-drawer__border {
+  display: none;
 }
 </style>
