@@ -16,7 +16,7 @@ jobs:
         id: prepare
         run: |
           DOCKER_IMAGE=fergalmoran/bitchmin-api
-          DOCKER_PLATFORMS=linux/arm/v7
+          DOCKER_PLATFORMS=linux/amd64,linux/arm/v7
           VERSION=edge
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -62,3 +62,4 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
+          
