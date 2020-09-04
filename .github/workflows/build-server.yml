@@ -12,11 +12,14 @@ jobs:
               uses: actions/checkout@master
             - name: Build and publish image
               uses: ilteoood/docker_buildx@master
+              env:
+                DOCKER_USER: ${{ secrets.DOCKER_USER }}
+                DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
               with:
                 publish: true
                 imageName: fergalmoran/bitchmin-api
                 dockerFile: ./server/Dockerfile
                 buildArg: ./server
                 platform: linux/arm/v7
-                dockerHubUser: ${{secrets.DOCKER_USER}}
-                dockerHubPassword: ${{secrets.DOCKER_PASSWORD}}
+                dockerHubUser: ${{DOCKER_USER}}
+                dockerHubPassword: ${{DOCKER_PASSWORD}}
