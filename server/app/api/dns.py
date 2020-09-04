@@ -11,7 +11,7 @@ from app.models import DnsUpdate
 from app.models import User
 from app.utils import dnsupdate
 from app.utils.dnsupdate import delete_record
-from app.utils.dnsutils import validate_dns_record
+from app.utils.dnsutils import get_dns_records
 from app.utils.iputils import is_valid_ip, is_valid_hostname
 
 logger = logging.getLogger(__name__)
@@ -62,9 +62,9 @@ def check_host_record():
     ip = args['ip']
     host = args['host']
 
-    result = validate_dns_record(host, ip, os.getenv('DNS_SERVER'))
+    actual_ip_records = get_dns_records(host, ip, os.getenv('DNS_SERVER'))
 
-    if result:
+    if ip in actual_ip_records:
         return jsonify({
             'status': 'success',
             'payload': '{} is in {} as {}'.format(host, os.getenv('DNS_SERVER'), ip)
@@ -72,7 +72,8 @@ def check_host_record():
 
     return jsonify({
         'status': 'error',
-        'payload': '{} is not in {} as {}'.format(host, os.getenv('DNS_SERVER'), ip)
+        'payload': 'Host {} is stored as {} but resolves to {}'.format
+        (host, ip, actual_ip_records[0])
     }), 200
 
 
