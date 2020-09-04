@@ -1,24 +1,31 @@
 <template>
-    <div class="card">
-        <div class="card-header">Add new record</div>
-        <div class="card-body">
-            <form class="forms-sample" @submit.prevent="processUpdate">
-                <div class="form-group">
-                    <label for="ipAddress">IP Address</label>
-                    <input type="text" class="form-control" id="ipAddress" v-model="ipAddress" />
-                </div>
+    <v-card class="mx-auto" outlined>
+        <template slot="progress">
+            <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
+        </template>
+        <v-card-title>Add New Host</v-card-title>
+        <v-card-text>
+            <v-row align="start" justify="start" class="mx-0">
+                <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+                    <v-text-field
+                        v-model="hostName"
+                        :rules="hostNameRules"
+                        label="Host Name"
+                        required
+                    ></v-text-field>
 
-                <div class="form-group">
-                    <label for="hostName">Host name</label>
-                    <input type="text" class="form-control" id="hostName" v-model="hostName" />
-                </div>
-                <div class="alert alert-danger" role="alert" v-if="error">{{error}}</div>
-                <button type="submit" class="btn btn-gradient-primary mr-2">Submit</button>
-                <button class="btn btn-light">Cancel</button>
-            </form>
-            <p v-if="msg">{{ msg }}</p>
-        </div>
-    </div>
+                    <v-text-field
+                        v-model="ipAddress"
+                        :rules="ipAddressRules"
+                        label="IP Address"
+                        required
+                    ></v-text-field>
+
+                    <v-btn color="warning" :disabled="!valid" @click="processUpdate">Add record</v-btn>
+                </v-form>
+            </v-row>
+        </v-card-text>
+    </v-card>
 </template>
 <script lang="ts">
 import { Component, PropSync, Vue } from 'vue-property-decorator';
@@ -30,13 +37,35 @@ import { DataApiResult } from '@/api/apiResult';
     name: 'DnsUpdateForm',
 })
 export default class DnsUpdateForm extends Vue {
-    public ipAddress = '';
-    public hostName = '';
-    public msg = '';
+    msg = '';
     error = '';
+    valid = true;
+    lazy = false;
 
-    @PropSync("inrecords")
+    hostName = '';
+    hostNameRules = [
+        (v: string) => !!v || 'Host name is required',
+        (v: string) =>
+            (v && v.length < 253) || 'Hostname cannot exceed 253 characters',
+    ];
+
+    ipAddress = '';
+    ipAddressRules = [
+        (v: string) => !!v || 'IP address is required',
+        (v: string) =>
+            /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+                v
+            ) || 'Invalid IP Address',
+        (v: string) =>
+            (v && v.length < 16) || 'IP address cannot exceed 16 characters',
+    ];
+
+    @PropSync('inrecords')
     public records!: DnsRecord[];
+
+    validate() {
+        // this.$refs.form.validate();
+    }
 
     processUpdate() {
         dnsApi

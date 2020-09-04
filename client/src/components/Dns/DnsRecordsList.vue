@@ -1,73 +1,47 @@
 <template>
-    <div class="card">
-        <div class="card-header header-sm">
-            <div class="d-flex align-items-center">
-                <div class="wrapper d-flex align-items-center media-info text-linkedin">
-                    <h2 class="card-title ml-3">Existing records</h2>
-                </div>
-                <div class="wrapper ml-auto action-bar" v-if="callInProgress">
-                    <i class="mdi mdi-image-filter-vintage text-danger mdi-spin"></i>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <transition name="fade">
-                <div class="alert alert-fill-danger" role="alert" v-if="errorMessage">
-                    <i class="mdi mdi-alert-circle"></i>
-                    {{errorMessage}}
-                </div>
-            </transition>
-            <table class="table table-hover table-bordered" v-if="records && records.length > 0">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Host</th>
-                        <th scope="col">IP</th>
-                        <th scope="col">Added</th>
-                        <th scope="col">#</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="host in records" :key="host.id">
-                        <td>{{host.host}}</td>
-                        <td>{{host.ip}}</td>
-                        <td>{{host.created_on | formatDate}}</td>
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <button
-                                    @click="refreshRecord(host)"
-                                    data-toggle="tooltip"
-                                    title="Refresh record in BIND"
-                                    type="button"
-                                    class="btn btn-sm btn-primary btn-rounded btn-icon"
-                                >
-                                    <i class="mdi mdi-refresh"></i>
-                                </button>
-                                <button
-                                    @click="verifyRecord(host)"
-                                    data-toggle="tooltip"
-                                    title="Verify record in BIND"
-                                    type="button"
-                                    :disabled="callInProgress"
-                                    class="btn btn-sm btn-primary btn-rounded btn-icon"
-                                >
-                                    <i class="mdi mdi-eye-check"></i>
-                                </button>
-                                <button
-                                    @click="deleteRecord(host)"
-                                    data-toggle="tooltip"
-                                    title="Delete record"
-                                    type="button"
-                                    class="btn btn-sm btn-primary btn-rounded btn-icon"
-                                >
-                                    <i class="mdi mdi-delete"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <v-card outlined>
+        <template slot="progress">
+            <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
+        </template>
+        <v-card-title>Existing records</v-card-title>
+        <v-card-text>
+            <v-row>
+                <v-alert type="error" v-if="errorMessage">{{errorMessage}}</v-alert>
+                <v-simple-table>
+                    <template v-slot:default>
+                        <thead>
+                            <tr>
+                                <th class="text-left">Host</th>
+                                <th class="text-left">IP</th>
+                                <th class="text-left">Added</th>
+                                <th class="text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="host in records" :key="host.id">
+                                <td>{{host.host}}</td>
+                                <td>{{host.ip}}</td>
+                                <td>{{host.created_on | formatDate}}</td>
+                                <td>
+                                    <v-btn-toggle dense background-color="pink" rounded>
+                                        <v-btn icon color="pink" @click="refreshRecord(host)">
+                                            <v-icon dark>mdi-refresh</v-icon>
+                                        </v-btn>
+                                        <v-btn icon color="pink" @click="verifyRecord(host)">
+                                            <v-icon dark>mdi-eye-check</v-icon>
+                                        </v-btn>
+                                        <v-btn icon color="pink" @click="deleteRecord(host)">
+                                            <v-icon dark>mdi-delete</v-icon>
+                                        </v-btn>
+                                    </v-btn-toggle>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-row>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script lang="ts">
@@ -78,7 +52,6 @@ import dayjs from 'dayjs';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { error } from 'jquery';
 
 @Component({
     name: 'DnsRecordsList',
