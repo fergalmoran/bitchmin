@@ -1,29 +1,45 @@
 <template>
     <v-row>
-        <v-col cols="12" sm="4" lg="4" v-if="lights.length !== 0 && currentLight">
-            <v-select
-                label="name"
-                item-text="name"
-                item-value="id"
-                :items="lights"
-                v-model="currentLight"
-            />
-            <v-slider
-                @change="light => changeBrightness(currentLight)"
-                :max="254"
-                v-model="currentLight.brightness"
-                label="Brightness"
-            ></v-slider>
-            <v-row justify="space-around">
-                <v-color-picker
-                    @input="changeColour"
-                    v-model="currentLight.rgbColour"
-                    class="ma-2"
-                    :swatches="swatches"
-                    show-swatches
-                    hide-mode-switch
-                ></v-color-picker>
-            </v-row>
+        <v-col cols="12" class="pa-12" sm="4" lg="4">
+            <v-skeleton-loader
+                v-if="lights.length===0"
+                class="mx-auto"
+                max-width="300"
+                type="list-item-avatar-three-line"
+            ></v-skeleton-loader>
+
+            <v-card class="elevation-12" v-if="lights.length !== 0 && currentLight">
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title class="headline">Light Settings</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-card-text>
+                    <v-select
+                        label="Choose light"
+                        item-text="name"
+                        item-value="id"
+                        :items="lights"
+                        v-model="currentLight"
+                    />
+                    <v-slider
+                        @change="light => changeBrightness(currentLight)"
+                        :max="254"
+                        v-model="currentLight.brightness"
+                        label="Brightness"
+                    ></v-slider>
+                    <v-row justify="space-around">
+                        <v-color-picker
+                            @input="changeColour"
+                            v-model="currentLight.rgbColour"
+                            class="ma-2"
+                            :swatches="swatches"
+                            show-swatches
+                            hide-mode-switch
+                        ></v-color-picker>
+                    </v-row>
+                </v-card-text>
+            </v-card>
         </v-col>
     </v-row>
 </template>
@@ -45,6 +61,23 @@ import { debounce } from 'decko';
     },
 })
 export default class Lights extends Vue {
+    error = '';
+    loading = true;
+    transition = 'scale-transition';
+    transitions = [
+        {
+            text: 'None',
+            value: undefined,
+        },
+        {
+            text: 'Fade Transition',
+            value: 'fade-transition',
+        },
+        {
+            text: 'Scale Transition',
+            value: 'scale-transition',
+        },
+    ];
     lights: Light[] = [];
     currentLight: Light | null = null;
     swatches = [
@@ -57,6 +90,7 @@ export default class Lights extends Vue {
     async mounted() {
         this.lights = await lightsApi.getLights();
         this.currentLight = this.lights[0];
+        this.loading = false;
         console.log('Lights', 'mounted', 'lights', this.lights);
     }
 
