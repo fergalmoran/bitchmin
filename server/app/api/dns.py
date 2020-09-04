@@ -1,6 +1,7 @@
 import logging
 import os
 
+import requests
 from flask import jsonify, request
 from flask_jwt_extended import jwt_required, get_current_user
 from IPy import IP
@@ -184,7 +185,7 @@ def get_request_headers():
 
 @api.route("/dns/myip", methods=["GET"])
 def get_my_ip():
-    ip = request.remote_addr
+    ip = requests.get('https://checkip.amazonaws.com').text.strip()
 
     if IP(ip).iptype() == 'PUBLIC':
         return jsonify({

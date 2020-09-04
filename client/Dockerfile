@@ -2,10 +2,10 @@ FROM node:14-stretch as build-stage
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN yarn install --production
 COPY . .
 COPY .eslintrc.js ./
-RUN npm run build
+RUN yarn build --production
 
 # Create the container from the alpine linux image
 FROM alpine:3.7 as production-image

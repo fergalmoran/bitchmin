@@ -1,48 +1,37 @@
 <template>
-  <v-row align="center" justify="center">
-    <v-col cols="12" sm="8" md="4">
-      <v-card class="elevation-12">
-        <v-toolbar color="primary" dark flat>
-          <v-toolbar-title>Login form</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn :href="source" icon large target="_blank" v-on="on">
-                <v-icon>mdi-code-tags</v-icon>
-              </v-btn>
-            </template>
-            <span>Source</span>
-          </v-tooltip>
-        </v-toolbar>
+  <v-layout align-center justify-center>
+    <v-flex xs12 sm8 md4 lg4>
+      <v-card class="elevation-1 pa-3">
         <v-card-text>
+          <div class="layout column align-center">
+            <img src="/images/bitchmints.jpg" alt="Vue Material Admin" width="360" height="240">
+            <h1 class="flex my-4 primary--text">Bitch::Mints</h1>
+          </div>
           <v-form>
             <v-text-field
-              label="Login"
               name="login"
-              prepend-icon="mdi-account"
-              placeholder="Email address"
-              v-model="email"
+              label="Login"
               type="text"
-            ></v-text-field>
-
+              v-model="email"
+              :error="error"
+              :rules="[rules.required]" />
             <v-text-field
-              id="password"
-              label="Password"
-              name="password"
-              prepend-icon="mdi-lock"
-              placeholder="Password"
-              v-model="password"
               type="password"
-            ></v-text-field>
+              name="password"
+              label="Password"
+              id="password"
+              :rules="[rules.required]"
+              v-model="password"
+              :error="error" />
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click="authenticate" color="primary">Login</v-btn>
+          <v-btn block color="primary" @click="authenticate" :loading="loading">Login</v-btn>
         </v-card-actions>
       </v-card>
-    </v-col>
-  </v-row>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
@@ -53,6 +42,11 @@ import store from '@/store';
   components: {}
 })
 export default class Login extends Vue {
+  loading: false;
+  error = false;
+  rules = {
+    required: (value: string) => !!value || 'Required.'
+  };
   email = '';
 
   password = '';
@@ -60,12 +54,21 @@ export default class Login extends Vue {
   errorMsg = '';
 
   authenticate() {
+    if (!this.email || !this.password) {
+      this.result = 'Email and Password can\'t be null.';
+      this.showResult = true;
+      return;
+    }
     store
       .dispatch('login', { email: this.email, password: this.password })
       .then(() => {
         console.log('Login', 'store_dispatch_login');
         this.$router.push('/');
-      });
+      }).error(() => {
+      this.error = true;
+      this.result = 'Email or Password is incorrect.';
+      this.showResult = true;
+    });
   }
 
   register() {
