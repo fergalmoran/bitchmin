@@ -19,7 +19,7 @@ class DnsUpdate(db.Model, _BaseModelMixin):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    host = db.Column(db.String(120), unique=True, nullable=False)
+    host = db.Column(db.String(255), unique=True, nullable=False)
     ip = db.Column(IPAddressType(255), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

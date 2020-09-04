@@ -1,4 +1,6 @@
 import os
+from datetime import timedelta
+
 from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,6 +18,23 @@ class Config(object):
     LOG_TO_STDOUT = os.getenv('LOG_TO_STDOUT')
     ADMINS = ['Ferg@lMoran.me']
     LANGUAGES = ['en', 'ie']
+
+    CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+    CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = os.getenv('MAIL_PORT')
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS')
+    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+
+    CELERYBEAT_SCHEDULE = {
+        'add-every-15-minutes': {
+            'task': 'app.tasks.hosts.check_host_records',
+            'schedule': timedelta(minutes=15)
+        }
+    }
 
 
 class ProductionConfig(Config):

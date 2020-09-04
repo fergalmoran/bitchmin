@@ -3,6 +3,7 @@ Flask-Cors
 Flask-SQLAlchemy
 Flask_Migrate
 flask_jwt_extended
+Flask-Mail
 sqlalchemy_utils
 phue
 python-dotenv
@@ -11,6 +12,9 @@ psycopg2-binary==2.8.5
 Psycopg2
 pylint
 werkzeug
-
+celery
+redis
+flower
+requests
 IPy
 pydig

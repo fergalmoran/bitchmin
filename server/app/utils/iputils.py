@@ -1,6 +1,6 @@
 import ipaddress
 import re
-
+import requests
 import sys
 
 
@@ -24,3 +24,8 @@ def is_valid_hostname(hostname):
         hostname = hostname[:-1]  # strip exactly one dot from the right, if present
     allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
+
+
+def get_my_external_ip():
+    ip = requests.get('http://ipinfo.io/json').json()['ip']
+    return ip
