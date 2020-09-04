@@ -18,5 +18,5 @@ jobs:
                 dockerFile: ./server/Dockerfile
                 buildArg: ./server
                 platform: linux/arm/v7
-                dockerHubUser: {{secret.DOCKER_USER}}
-                dockerHubPassword: {{secret.DOCKER_PASSWORD}}
+                dockerHubUser: ${{secret.DOCKER_USER}}
+                dockerHubPassword: ${{secret.DOCKER_PASSWORD}}
