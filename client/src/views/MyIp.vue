@@ -3,7 +3,7 @@
         <v-layout row wrap class="mb-12">
             <v-card
                 v-if="ip"
-                class="mx-auto"
+                class="mx-16"
                 max-width="344"
             >
                 <v-card-title>
