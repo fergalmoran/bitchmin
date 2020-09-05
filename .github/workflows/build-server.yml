@@ -1,7 +1,7 @@
 name: build-server
 on:
   push:
-    branches: trunk
+    branches: develop
 jobs:
   buildx:
     runs-on: ubuntu-latest

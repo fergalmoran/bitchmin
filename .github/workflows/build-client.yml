@@ -2,7 +2,7 @@ name: build-client
 
 on:
   push:
-    branches: trunk
+    branches: develop
 
 jobs:
    buildx:
