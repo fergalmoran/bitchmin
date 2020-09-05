@@ -17,7 +17,7 @@ jobs:
         run: |
           DOCKER_IMAGE=fergalmoran/bitchmin-web
           DOCKER_PLATFORMS=linux/amd64,linux/arm/v7
-          VERSION=edge
+          VERSION=latest
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
