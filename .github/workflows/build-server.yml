@@ -14,9 +14,8 @@ jobs:
         with:
           buildx-version: latest
           qemu-version: latest
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-      - name: Login to DockerHub
+      -
+        name: Login to DockerHub
         if: success() && github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
@@ -25,8 +24,6 @@ jobs:
       - name: Run Buildx
         run: |
           docker buildx build \
-            --platform linux/arm/v7 \
-            --output "type=image,push=true" \
-            --output "type=image,push=true" \
-            -t fergalmoran/bitchmin-api \
-            --file ./server/Dockerfile ./server
+              --push \
+              --platform linux/arm/v7 \
+              -t fergalmoran/bitchmin-api -f ./server/Dockerfile ./server
