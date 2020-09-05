@@ -30,7 +30,7 @@ class Config(object):
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 
     CELERYBEAT_SCHEDULE = {
-        'add-every-15-minutes': {
+        'add-every-5-minutes': {
             'task': 'app.tasks.hosts.check_host_records',
             'schedule': timedelta(minutes=15)
         }
