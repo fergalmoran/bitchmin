@@ -18,9 +18,19 @@ jobs:
           DOCKER_IMAGE=fergalmoran/bitchmin-api
           DOCKER_PLATFORMS=linux/amd64,linux/arm/v7
           VERSION=latest
+
+          TAGS="--tag ${DOCKER_IMAGE}:${VERSION}"
+          if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            TAGS="$TAGS --tag ${DOCKER_IMAGE}:latest"
+          fi
+
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
+          echo ::set-output name=version::${VERSION}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
-            --file ./server/Dockerfile ./server
+            --build-arg VERSION=${VERSION} \
+            --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+            --build-arg VCS_REF=${GITHUB_SHA::8} \
+            ${TAGS} --file ./server/Dockerfile ./server
       -
         name: Set up Docker Buildx
         uses: crazy-max/ghaction-docker-buildx@v3
