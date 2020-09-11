@@ -26,7 +26,7 @@ def check_host_records():
     except NoResultFound:
         bind_state = BindState(
             nameserver_1_ip=platform_ip,
-            nameserver_1_host=os.getenv('DNS_SERVER')
+            nameserver_1_host=os.getenv('DNSro_SERVER')
         )
         db.session.add(bind_state)
         db.session.commit()

@@ -9,16 +9,6 @@
             </v-col>
         </v-row>
     </v-container>
-    <!-- <v-container fluid grid-list-xl>
-        <v-layout row wrap>
-            <v-flex sm4 xs4>
-                <DnsUpdateForm :inrecords="dnsRecords" />
-            </v-flex>
-            <v-flex d-flex lg4 sm6 xs12>
-                <DnsRecordsList :inrecords="dnsRecords" />
-            </v-flex>
-        </v-layout>
-    </v-container>-->
 </template>
 
 <script lang="ts">
@@ -30,17 +20,17 @@ import { DnsRecord } from '@/models';
 import { dnsApi } from '@/api';
 
 @Component({
-  components: {
-    HelloWorld,
-    DnsRecordsList,
-    DnsUpdateForm,
-  },
+    components: {
+        HelloWorld,
+        DnsRecordsList,
+        DnsUpdateForm,
+    },
 })
 export default class BitchNS extends Vue {
     dnsRecords: DnsRecord[] = [];
 
     async mounted() {
-      this.dnsRecords = await dnsApi.getDnsRecords();
+        this.dnsRecords = await dnsApi.getDnsRecords();
     }
 }
 </script>

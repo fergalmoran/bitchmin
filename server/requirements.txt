@@ -18,4 +18,6 @@ flower
 requests
 IPy
 pydig
+tinder
 twilio
+flask_monitoringdashboard

@@ -1,14 +1,14 @@
 <template>
-  <v-app id="bitchmin">
-    <TopBarNav  v-if="isAuthenticated"/>
-    <SideBarNav v-if="isAuthenticated" />
-    <v-main>
-      <v-container fluid>
-        <router-view></router-view>
-      </v-container>
-    </v-main>
-    <Footer />
-  </v-app>
+    <v-app id="bitchmin">
+        <TopBarNav v-on:toggle-sidebar="drawerOpen = !drawerOpen" v-if="isAuthenticated" />
+        <SideBarNav v-if="isAuthenticated" v-model="drawerOpen" />
+        <v-main>
+            <v-container fluid>
+                <router-view></router-view>
+            </v-container>
+        </v-main>
+        <Footer />
+    </v-app>
 </template>
 
 <script lang="ts">
@@ -18,24 +18,26 @@ import SideBarNav from '@/components/SideBarNav.vue'; // @ is an alias to /src
 import Footer from '@/components/Footer.vue'; // @ is an alias to /src
 
 @Component({
-  components: {
-    TopBarNav,
-    SideBarNav,
-    Footer,
-  },
+    components: {
+        TopBarNav,
+        SideBarNav,
+        Footer,
+    },
 })
 export default class App extends Vue {
-  async mounted() {
-    this.$store.dispatch('loadInitialState');
-  }
+    drawerOpen = true;
 
-  get isAuthenticated() {
-    return this.$store.getters.isLoggedIn;
-  }
+    async mounted() {
+        this.$store.dispatch('loadInitialState');
+    }
+
+    get isAuthenticated() {
+        return this.$store.getters.isLoggedIn;
+    }
 }
 </script>
 <style>
 #keep .v-navigation-drawer__border {
-  display: none;
+    display: none;
 }
 </style>

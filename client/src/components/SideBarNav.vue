@@ -1,5 +1,8 @@
 <template>
-    <v-navigation-drawer v-model="drawer" app clipped color="grey lighten-4">
+    <v-navigation-drawer
+                v-bind:value="value"
+                v-on:input="$emit('input', $event)"
+                app clipped color="grey lighten-4">
         <v-list dense class="grey lighten-4">
             <template v-for="(item, i) in items">
                 <v-row v-if="item.heading" :key="i" align="center">
@@ -24,19 +27,21 @@
     </v-navigation-drawer>
 </template>
 
-<script>
-import { Component, Vue } from 'vue-property-decorator';
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class SideBarNav extends Vue {
-    drawer = null;
+    @Prop({ required: true, default: true })
+    value = true;
 
     items = [
-      { title: 'Debug', icon: 'mdi-bug', route: 'debug' },
-      { title: 'DNS Config', icon: 'mdi-dns', route: 'bitchns' },
-      { title: 'IP Tools', icon: 'mdi-ip', route: 'myip' },
-      { title: 'JWT Decoder', icon: 'mdi-code-array', route: 'jwt' },
-      { title: 'Lights', icon: 'mdi-lightbulb', route: 'lights' },
+        { title: 'Debug', icon: 'mdi-bug', route: 'debug' },
+        { title: 'DNS Config', icon: 'mdi-dns', route: 'bitchns' },
+        { title: 'Media Stuff', icon: 'mdi-filmstrip', route: 'media' },
+        { title: 'IP Tools', icon: 'mdi-ip', route: 'myip' },
+        { title: 'JWT Decoder', icon: 'mdi-code-array', route: 'jwt' },
+        { title: 'Lights', icon: 'mdi-lightbulb', route: 'lights' },
     ];
 }
 </script>

@@ -24,7 +24,7 @@ migrate = Migrate()
 CELERY_TASK_LIST = [
     'app.tasks.hosts',
 ]
-
+import flask_monitoringdashboard as dashboard
 
 def create_app(app_name='bitchmin', config_class=Config):
     logger.info('Creating app {}'.format(app_name))

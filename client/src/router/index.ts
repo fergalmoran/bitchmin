@@ -4,10 +4,12 @@ import store from '@/store';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Lights from '../views/Lights.vue';
+import About from '../views/About.vue';
 import Debug from '../views/Debug.vue';
 import BitchNS from '../views/BitchNS.vue';
 import JwtDecoder from '../views/JwtDecoder.vue';
 import MyIp from '../views/MyIp.vue';
+import Media from '../views/Media.vue';
 
 Vue.use(VueRouter);
 
@@ -24,6 +26,14 @@ const routes: Array<RouteConfig> = [
     path: '/login',
     name: 'Login',
     component: Login,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: '/media',
+    name: 'Media',
+    component: Media,
     meta: {
       requiresAuth: false,
     },
@@ -66,7 +76,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/about',
     name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    component: About,
     meta: {
       requiresAuth: true,
     },

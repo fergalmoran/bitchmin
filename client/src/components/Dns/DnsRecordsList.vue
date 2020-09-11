@@ -1,12 +1,15 @@
 <template>
     <v-card outlined>
         <template slot="progress">
-            <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
+            <v-progress-linear color="deep-purple" height="10" indeterminate>
+            </v-progress-linear>
         </template>
         <v-card-title>Existing records</v-card-title>
         <v-card-text>
             <v-row>
-                <v-alert type="error" v-if="errorMessage">{{errorMessage}}</v-alert>
+                <v-alert type="error" v-if="errorMessage">
+                    {{errorMessage}}
+                </v-alert>
                 <v-simple-table>
                     <template v-slot:default>
                         <thead>
@@ -23,14 +26,21 @@
                                 <td>{{host.ip}}</td>
                                 <td>{{host.created_on | formatDate}}</td>
                                 <td>
-                                    <v-btn-toggle dense background-color="pink" rounded>
-                                        <v-btn icon color="pink" @click="refreshRecord(host)">
+                                    <v-btn-toggle dense
+                                            background-color="pink"
+                                            rounded>
+                                        <v-btn icon color="pink"
+                                                @click="refreshRecord(host)">
                                             <v-icon dark>mdi-refresh</v-icon>
                                         </v-btn>
-                                        <v-btn icon color="pink" @click="verifyRecord(host)">
+                                        <v-btn icon
+                                                color="pink"
+                                                @click="verifyRecord(host)">
                                             <v-icon dark>mdi-eye-check</v-icon>
                                         </v-btn>
-                                        <v-btn icon color="pink" @click="deleteRecord(host)">
+                                        <v-btn icon
+                                                color="pink"
+                                                @click="deleteRecord(host)">
                                             <v-icon dark>mdi-delete</v-icon>
                                         </v-btn>
                                     </v-btn-toggle>
@@ -45,9 +55,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, PropSync, Vue,
-} from 'vue-property-decorator';
+import { Component, PropSync, Vue } from 'vue-property-decorator';
 import { dnsApi } from '@/api';
 import { DnsRecord } from '@/models/dnsRecord';
 import dayjs from 'dayjs';
@@ -57,16 +65,16 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 @Component({
-  name: 'DnsRecordsList',
-  filters: {
-    formatDate: (date: string) => {
-      if (!date) {
-        return null;
-      }
-      const d = dayjs(date);
-      return d.format('L LT');
+    name: 'DnsRecordsList',
+    filters: {
+        formatDate: (date: string) => {
+            if (!date) {
+                return null;
+            }
+            const d = dayjs(date);
+            return d.format('L LT');
+        },
     },
-  },
 })
 export default class DnsRecordsList extends Vue {
     @PropSync('inrecords')
@@ -77,41 +85,41 @@ export default class DnsRecordsList extends Vue {
     errorMessage = '';
 
     async refreshRecord(host: DnsRecord) {
-      this.callInProgress = true;
-      console.log('DnsRecordsList', 'refreshRecord', host);
-      const result = await dnsApi.refreshDnsRecord(host.host, host.ip);
-      if (result.status === 'success') {
-        Vue.toasted.success('Refreshed successfully');
-      }
-      this.callInProgress = false;
+        this.callInProgress = true;
+        console.log('DnsRecordsList', 'refreshRecord', host);
+        const result = await dnsApi.refreshDnsRecord(host.host, host.ip);
+        if (result.status === 'success') {
+            Vue.toasted.success('Refreshed successfully');
+        }
+        this.callInProgress = false;
     }
 
     async verifyRecord(record: DnsRecord) {
-      this.callInProgress = true;
-      const result = await dnsApi.verifyDnsRecord(record.host, record.ip);
-      if (result.status === 'success') {
-        Vue.toasted.success(result.payload || 'Record checks out');
-      } else {
-        this.errorMessage = result.payload || 'Error checking record';
-        Vue.toasted.error(this.errorMessage);
-      }
-      this.callInProgress = false;
+        this.callInProgress = true;
+        const result = await dnsApi.verifyDnsRecord(record.host, record.ip);
+        if (result.status === 'success') {
+            Vue.toasted.success(result.payload || 'Record checks out');
+        } else {
+            this.errorMessage = result.payload || 'Error checking record';
+            Vue.toasted.error(this.errorMessage);
+        }
+        this.callInProgress = false;
     }
 
     async deleteRecord(record: DnsRecord) {
-      this.callInProgress = true;
-      const result = await dnsApi.deleteDnsRecord(record.host);
-      if (result === 200) {
-        Vue.toasted.success('Record deleted successfully');
-        this.records = this.records.filter((t) => t.host !== record.host);
-        console.log('DnsRecordsList', 'delete', this.records);
-      }
-      this.callInProgress = false;
+        this.callInProgress = true;
+        const result = await dnsApi.deleteDnsRecord(record.host);
+        if (result === 200) {
+            Vue.toasted.success('Record deleted successfully');
+            this.records = this.records.filter((t) => t.host !== record.host);
+            console.log('DnsRecordsList', 'delete', this.records);
+        }
+        this.callInProgress = false;
     }
 
     mounted() {
-      dayjs.extend(localizedFormat);
-      console.log('DnsRecordsList', 'mounded_after', this.records);
+        dayjs.extend(localizedFormat);
+        console.log('DnsRecordsList', 'mounded_after', this.records);
     }
 }
 </script>
