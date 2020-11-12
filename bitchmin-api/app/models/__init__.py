@@ -1,3 +1,2 @@
-from .dnsupdate import DnsUpdate
+from .dns import DnsZone, DnsNameServer, DnsHost
 from .user import User
-from .bindstate import BindState

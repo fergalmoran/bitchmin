@@ -52,7 +52,7 @@ def login():
         'accessToken': access_token,
         'refreshToken': refresh_token,
         'user': {
-            'fullName': user.fullName
+            'fullName': user.full_name
         }
     }), 200
 

@@ -1,5 +1,5 @@
 <template>
-    <v-card class="mx-auto" outlined>
+    <v-card class="mx-auto" >
         <template slot="progress">
             <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
         </template>
@@ -30,7 +30,7 @@
 <script lang="ts">
 import { Component, PropSync, Vue } from 'vue-property-decorator';
 import { dnsApi } from '@/api';
-import { DnsRecord } from '@/models/dnsRecord';
+import { DnsHost } from '@/models/dnsHost';
 import { DataApiResult } from '@/api/apiResult';
 
 @Component({
@@ -67,7 +67,7 @@ export default class DnsUpdateForm extends Vue {
     ];
 
     @PropSync('inrecords')
-    public records!: DnsRecord[];
+    public records!: DnsHost[];
 
     validate() {
         // this.$refs.form.validate();
@@ -76,7 +76,7 @@ export default class DnsUpdateForm extends Vue {
     processUpdate() {
         dnsApi
             .updateDnsRecord(this.hostName, this.ipAddress)
-            .then((r: DataApiResult<DnsRecord>) => {
+            .then((r: DataApiResult<DnsHost>) => {
                 if (r.status === 'success') {
                     this.error = '';
                     Vue.toasted.success('Update successful');

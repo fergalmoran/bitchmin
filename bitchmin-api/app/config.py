@@ -7,14 +7,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '../.env'))
 
 ISDEV = os.getenv('FLASK_ENV') == 'development'
+DEBUG_CONNECTION = 'postgresql+psycopg2://bitchmin:bitchmin@localhost/bitchmin'
+# DEBUG_CONNECTION = 'sqlite:///' + os.path.join(basedir, '../app.db')
 
 
 class Config(object):
     ISDEV = ISDEV
     SECRET_KEY = os.getenv('SECRET_KEY') or 'you-will-never-guess'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'postgresql+psycopg2://bitchmin:bitchmin@localhost/bitchmin'
-                              # 'sqlite:///' + os.path.join(basedir, '../app.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or DEBUG_CONNECTION
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     LOG_TO_STDOUT = os.getenv('LOG_TO_STDOUT')
     ADMINS = ['Ferg@lMoran.me']

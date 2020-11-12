@@ -57,7 +57,7 @@
 <script lang="ts">
 import { Component, PropSync, Vue } from 'vue-property-decorator';
 import { dnsApi } from '@/api';
-import { DnsRecord } from '@/models/dnsRecord';
+import { DnsHost } from '@/models/dnsHost';
 import dayjs from 'dayjs';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,13 +78,13 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 })
 export default class DnsRecordsList extends Vue {
     @PropSync('inrecords')
-    public records!: DnsRecord[];
+    public records!: DnsHost[];
 
     private callInProgress = false;
 
     errorMessage = '';
 
-    async refreshRecord(host: DnsRecord) {
+    async refreshRecord(host: DnsHost) {
         this.callInProgress = true;
         console.log('DnsRecordsList', 'refreshRecord', host);
         const result = await dnsApi.refreshDnsRecord(host.host, host.ip);
@@ -94,7 +94,7 @@ export default class DnsRecordsList extends Vue {
         this.callInProgress = false;
     }
 
-    async verifyRecord(record: DnsRecord) {
+    async verifyRecord(record: DnsHost) {
         this.callInProgress = true;
         const result = await dnsApi.verifyDnsRecord(record.host, record.ip);
         if (result.status === 'success') {
@@ -106,7 +106,7 @@ export default class DnsRecordsList extends Vue {
         this.callInProgress = false;
     }
 
-    async deleteRecord(record: DnsRecord) {
+    async deleteRecord(record: DnsHost) {
         this.callInProgress = true;
         const result = await dnsApi.deleteDnsRecord(record.host);
         if (result === 200) {

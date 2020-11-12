@@ -14,7 +14,7 @@ def get_user():
     user = get_current_user()
     if user:
         user = {
-            'fullName': user.fullName,
+            'fullName': user.full_name,
         }
         return jsonify({
             'status': 'success',

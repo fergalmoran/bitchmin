@@ -8,14 +8,18 @@ from IPy import IP
 
 from app import db
 from app.api import api
-from app.models import DnsUpdate
-from app.models import User
+from app.models import User, DnsHost, DnsZone
 from app.utils import dnsupdate
 from app.utils.dnsupdate import delete_record
 from app.utils.dnsutils import get_dns_records
 from app.utils.iputils import is_valid_ip, is_valid_hostname
 
 logger = logging.getLogger(__name__)
+
+
+@api.route('/dns/hosts')
+def get_hosts():
+    return DnsZone.get_delete_put_post()
 
 
 @api.route('/dns/refresh', methods=['POST'])
@@ -94,7 +98,7 @@ def delete_dns_record():
         os.getenv('DNS_KEY'),
         host)
 
-    records = DnsUpdate.query.filter_by(host=host).all()
+    records = db.session(DnsHost).query.filter_by(host=host).all()
     for record in records:
         db.session.delete(record)
     db.session.commit()
@@ -135,7 +139,7 @@ def update_dns():
             'payload': '{} is not a valid IP address'.format(hostname)
         }), 400
 
-    count = DnsUpdate.query.filter_by(host=hostname).count()
+    count = db.session(DnsHost).query.filter_by(host=hostname).count()
     if count != 0:
         logger.warning('HOST {} is already in the system'.format(hostname))
         return jsonify({
@@ -151,7 +155,7 @@ def update_dns():
         args['ip'])
 
     if update_result:
-        update = DnsUpdate(args['host'], ip, user)
+        update = db.session(DnsHost)(args['host'], ip, user)
         db.session.add(update)
         db.session.commit()
 
@@ -169,7 +173,7 @@ def update_dns():
 @jwt_required
 def get_dns_list():
     user = get_current_user()
-    updates = DnsUpdate \
+    updates = db.session(DnsHost) \
         .query \
         .filter(User.id == user.id) \
         .all()

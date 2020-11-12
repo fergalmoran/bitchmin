@@ -4,6 +4,7 @@ Flask-SQLAlchemy
 Flask_Migrate
 flask_jwt_extended
 Flask-Mail
+Flask-Serialize
 sqlalchemy_utils
 phue
 python-dotenv
@@ -15,9 +16,11 @@ werkzeug
 celery
 redis
 flower
+sqlalchemy
 requests
 IPy
 pydig
 tinder
 twilio
 flask_monitoringdashboard
+pytest

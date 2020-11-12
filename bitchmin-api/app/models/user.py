@@ -12,17 +12,15 @@ from app.models._basemodel import _BaseModelMixin
 class User(db.Model, _BaseModelMixin):
     __tablename__ = 'users'
     id: str
-    fullName: str
+    full_name: str
 
     email = db.Column(db.String(120), unique=True, nullable=False)
-    fullName = db.Column(db.String(120), unique=False, nullable=True)
+    full_name = db.Column(db.String(120), unique=False, nullable=True)
     password = db.Column(db.String(255), nullable=False)
 
-    dns_updates = relationship("DnsUpdate")
-
-    def __init__(self, email, fullName, password):
+    def __init__(self, email, full_name, password):
         self.email = email
-        self.fullName = fullName
+        self.full_name = full_name
         self.password = generate_password_hash(password, method='sha256')
 
     @property

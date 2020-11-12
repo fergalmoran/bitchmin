@@ -2,7 +2,7 @@ import { Api } from '@/api/apiBase';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { apiConfig } from '@/api/config';
 import { ApiResult, DataApiResult } from '@/api/apiResult';
-import { DnsRecord } from '@/models/dnsRecord';
+import { DnsHost } from '@/models/dnsHost';
 
 export class DnsApi extends Api {
     constructor(config: AxiosRequestConfig) {
@@ -13,11 +13,11 @@ export class DnsApi extends Api {
     public async updateDnsRecord(
         hostName: string,
         ipAddress: string,
-    ): Promise<DataApiResult<DnsRecord>> {
+    ): Promise<DataApiResult<DnsHost>> {
         const result = await this.post<
             ApiResult,
             any,
-            AxiosResponse<DataApiResult<DnsRecord>>
+            AxiosResponse<DataApiResult<DnsHost>>
         >('/dns/', {
             host: hostName,
             ip: ipAddress,
@@ -35,11 +35,11 @@ export class DnsApi extends Api {
     public async refreshDnsRecord(
         hostName: string,
         ip: string,
-    ): Promise<DataApiResult<DnsRecord>> {
+    ): Promise<DataApiResult<DnsHost>> {
         const result = await this.post<
             ApiResult,
             any,
-            AxiosResponse<DataApiResult<DnsRecord>>
+            AxiosResponse<DataApiResult<DnsHost>>
         >('/dns/refresh', {
             host: hostName,
             ip,
@@ -62,8 +62,8 @@ export class DnsApi extends Api {
         return result.data;
     }
 
-    public async getDnsRecords(): Promise<DnsRecord[]> {
-        const result = await this.get<DnsRecord[]>('/dns/list');
+    public async getDnsRecords(): Promise<DnsHost[]> {
+        const result = await this.get<DnsHost[]>('/dns/list');
         return result.data;
     }
 
