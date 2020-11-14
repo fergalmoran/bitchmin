@@ -24,6 +24,12 @@ class DnsNameServer(db.Model, _BaseModelMixin, FlaskSerializeMixin):
         self.host = host
         self.ip = ip
 
+    def to_dict(self):
+        return {
+            'host': self.host,
+            'ip': self.ip
+        }
+
 
 @dataclass
 class DnsZone(db.Model, _BaseModelMixin, FlaskSerializeMixin):
@@ -48,6 +54,19 @@ class DnsZone(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
         return self._create_serial()
 
+    def to_dict(self):
+        ret_data = {
+            'name': self.zone_name,
+            'serial': self.serial,
+            'admin': self.admin,
+            'nameservers': [ns.to_dict() for ns in self.nameservers],
+            'hosts': [host.to_dict() for host in self.hosts]
+        }
+        return ret_data
+
+    # TODO: FUCK!!
+    admin = 'Ferg@lMoran.me'
+
     id = db.Column(db.Integer, primary_key=True)
     zone_name = db.Column(db.String(253), unique=True, nullable=False)
     serial = db.Column(db.Integer, default=_create_serial)
@@ -66,15 +85,24 @@ class DnsHost(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
     host = db.Column(db.String(255), unique=True, nullable=False)
     ip = db.Column(IPAddressType(255), nullable=False)
+    type = db.Column(db.String(10), nullable=False)
+    ttl = db.Column(db.Integer(), nullable=False)
 
-    def __init__(self, zone, host, ip):
+    def __init__(self, zone, host, ip, ttl=30, record_type='A'):
         self.zone = zone
         self.host = host
         self.ip = ip
+        self.ttl = ttl
+        self.type = record_type
         pass
 
     def to_dict(self):
-        return dict(id=self.id, host=self.host, ip=self.ip)
+        return {
+            'name': self.host,
+            'type': self.type,
+            'ttl': self.ttl,
+            'ip': self.ip,
+        }
 
 
 # @event.listens_for(DnsZone.hosts, 'append')

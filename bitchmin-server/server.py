@@ -1,56 +1,40 @@
+import json
 import logging
+import os
 
+import requests
 from twisted.internet import reactor
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.names import client, dns, server
 
+from models.zone import Zone
 from resolvers.memory_resolver import MemoryResolver
 from servers.worker_server import WorkerServerFactory
 
 logging.basicConfig(level=logging.DEBUG)
 
-PORT = 10053
-WORKER_PORT = 10054
+PORT = os.environ.get('DNS_PORT') or 10053
+WORKER_PORT = os.environ.get('WORKER_PORT') or 10054
+API_HOST = os.environ.get('API_HOST') or 'http://localhost:5000/dns/zones'
+
+
+# TODO: This smells
+def get_zones():
+    response = requests.get(API_HOST)
+    zones = Zone.from_json(response.text)
+    return {
+        zone.name: zone
+        for zone in zones}
 
 
 def main():
-    zones = {
-        'bitchmints.com': {
-            'serial': 'BOOO',
-            'admin': 'Ferg@lMoran.me',
-            'nameservers': [
-                'ns1.bitchmints.com',
-                'ns2.bitchmints.com'
-            ],
-            'hosts': {
-                'ns1': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.7'},
-                'ns2': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.8'},
-                'host-1': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.1'},
-                'host-2': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.1'},
-                'host-3': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.1'},
-                'host-4': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.1'},
-            }
-        },
-        'fergl.ie': {
-            'serial': 'BOOO',
-            'admin': 'Ferg@lMoran.me',
-            'nameservers': [
-                'ns1.bitchmints.com',
-                'ns2.bitchmints.com'
-            ],
-            'hosts': {
-                'farts': {'type': 'A', 'ttl': 30, 'ip': '10.1.33.8'},
-            }
-        }
-    }
-
+    zones = get_zones()
     memory_resolver = MemoryResolver(zones)
 
     dns_factory = server.DNSServerFactory(
         clients=[
             memory_resolver,
             client.Resolver(resolv='/etc/resolv.conf')]
-
     )
 
     protocol = dns.DNSDatagramProtocol(controller=dns_factory)

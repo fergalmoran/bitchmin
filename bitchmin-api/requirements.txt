@@ -20,7 +20,9 @@ sqlalchemy
 requests
 IPy
 pydig
-tinder
 twilio
 flask_monitoringdashboard
+jinja2==2.11.1
 pytest
+pytest-flask
+pytest-flask-sqlalchemy

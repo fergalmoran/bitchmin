@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -17,9 +18,9 @@ from app.utils.iputils import is_valid_ip, is_valid_hostname
 logger = logging.getLogger(__name__)
 
 
-@api.route('/dns/hosts')
-def get_hosts():
-    return DnsZone.get_delete_put_post()
+@api.route('/dns/zones')
+def get_zones():
+    return jsonify([zone.to_dict() for zone in db.session.query(DnsZone).all()]), 200
 
 
 @api.route('/dns/refresh', methods=['POST'])

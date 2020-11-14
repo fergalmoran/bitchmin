@@ -2,5 +2,5 @@
 
 docker buildx build \
     --push \
-    --platform linux/arm/v7,linux/amd64 \
+    --platform linux/arm/v7 \
     -t fergalmoran/bitchmin-api .

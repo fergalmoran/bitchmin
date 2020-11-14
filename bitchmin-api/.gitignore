@@ -144,3 +144,4 @@ cython_debug/
 app.db
 bitchmin.db
 .idea/
+app/dashboard.cfg

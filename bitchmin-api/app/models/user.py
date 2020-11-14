@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from flask_jwt_extended import create_access_token, create_refresh_token
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -48,6 +49,15 @@ class User(db.Model, _BaseModelMixin):
             return None
 
         return user
+
+    def create_refresh_token(self):
+        return create_refresh_token(self.id)
+
+    def create_token(self, expiry=timedelta(days=14)):
+        return create_access_token(
+            identity=self.id,
+            expires_delta=expiry,
+            fresh=True)
 
     @classmethod
     def by_id(cls, user_id):

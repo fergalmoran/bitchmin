@@ -1,41 +1,38 @@
 import logging
 from datetime import timedelta
 
-from flask import jsonify, request
+from flask import jsonify, request, current_app
 from flask_jwt_extended import (
-    create_access_token,
-    jwt_refresh_token_required, create_refresh_token,
-    get_current_user
+    jwt_refresh_token_required, get_current_user
 )
+from sqlalchemy.orm.exc import NoResultFound
 
 from app import db, jwt
 from app.api import api
-from app.config import Config
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
 
-def __create_token(user_id):
-    expiry = timedelta(days=14) if Config.ISDEV else timedelta(minutes=15)
-    return create_access_token(
-        identity=user_id,
-        expires_delta=expiry,
-        fresh=True)
-
-
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
-    return User.by_id(identity)
+    return db.session.query(User).get(identity)
 
 
 @api.route('/auth/register/', methods=('POST',))
 def register():
     data = request.get_json()
     user = User(**data)
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(user.to_dict()), 201
+    try:
+        db.session.query(User).filter_by(email=user.email).one()
+        return jsonify({
+            'status': 'error',
+            'payload': 'User with email {} already exists.'.format(user.email)
+        }), 409
+    except NoResultFound:
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.to_dict()), 201
 
 
 @api.route('/auth/login/', methods=('POST',))
@@ -45,8 +42,8 @@ def login():
 
     if not user:
         return jsonify({'message': 'Invalid credentials', 'authenticated': False}), 401
-    access_token = __create_token(user.id)
-    refresh_token = create_refresh_token(user.id)
+    access_token = user.create_token(timedelta(days=14) if current_app.config['ISDEV'] else timedelta(minutes=15))
+    refresh_token = user.create_refresh_token()
 
     return jsonify({
         'accessToken': access_token,
@@ -61,8 +58,8 @@ def login():
 @jwt_refresh_token_required
 def token_refresh():
     user = get_current_user()
-    access_token = __create_token(user.id)
-    refresh_token = create_refresh_token(user.id)
+    access_token = user.create_token()
+    refresh_token = user.create_refresh_token()
 
     return jsonify({
         'accessToken': access_token,

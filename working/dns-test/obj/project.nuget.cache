@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "eyFn1mF0Ec0RODelM//pl87ne40rmd2/fm30g+WxWQ97TpqhUsZ79YryHC9MGUYH+wDk/epuUARQ5ofTUycO6w==",
+  "success": true,
+  "projectFilePath": "/home/fergalm/dev/BitchMin/working/dns-test/dns-test.csproj",
+  "expectedPackageFiles": [
+    "/home/fergalm/.nuget/packages/dnsclient/1.3.2/dnsclient.1.3.2.nupkg.sha512"
+  ],
+  "logs": []
+}

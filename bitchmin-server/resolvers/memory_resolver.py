@@ -1,3 +1,4 @@
+import requests
 from twisted.internet import defer
 from twisted.names import dns, error
 import logging
@@ -8,7 +9,8 @@ class InvalidZoneException(Exception):
 
 
 class Resolver:
-    def _build_host(self, record_type, host, ip, ttl):
+    @staticmethod
+    def _build_host(record_type, host, ip, ttl):
         return {
             host: {
                 'type': record_type,
@@ -68,7 +70,7 @@ class MemoryResolver(Resolver):
         """
         try:
             host = self._parse_host(zone, str(query.name))
-            record = self._zones[zone]['hosts'][host]
+            record = self._zones[zone].hosts[host]
 
             if query.type == dns.NS:
                 payload = dns.Record_NS(
@@ -77,14 +79,14 @@ class MemoryResolver(Resolver):
                 )
             else:
                 payload = dns.Record_A(
-                    address=record['ip'],
-                    ttl=record['ttl']
+                    address=record.ip,
+                    ttl=record.ttl
                 )
 
             answer = dns.RRHeader(
                 name=zone,
                 payload=payload,
-                ttl=record['ttl']
+                ttl=record.ttl
             )
 
             answers = [answer]

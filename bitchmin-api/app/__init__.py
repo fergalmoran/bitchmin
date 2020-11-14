@@ -9,8 +9,9 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+import flask_monitoringdashboard as dashboard
 
-from app.config import Config
+from app.conf import load_config
 from app.utils.encoders import IPAddressFieldEncoder
 
 logger = logging.getLogger(__name__)
@@ -18,19 +19,20 @@ logger = logging.getLogger(__name__)
 db = SQLAlchemy()
 jwt = JWTManager()
 mail = Mail()
-
 migrate = Migrate()
 
 CELERY_TASK_LIST = [
     'app.tasks.hosts',
 ]
-import flask_monitoringdashboard as dashboard
 
 
-def create_app(app_name='bitchmin', config_class=Config):
+def create_app(app_name='bitchmin'):
     logger.info('Creating app {}'.format(app_name))
     app = Flask(app_name)
-    app.config.from_object(config_class)
+
+    app.config.from_object(
+        load_config(os.environ.get('FLASK_ENV'))
+    )
 
     logger.info('Creating database {}'.format(app.config['SQLALCHEMY_DATABASE_URI']))
     db.init_app(app)
@@ -69,6 +71,8 @@ def create_app(app_name='bitchmin', config_class=Config):
             app.logger.addHandler(file_handler)
 
     app.json_encoder = IPAddressFieldEncoder
+    dashboard.bind(app)
+    dashboard.config.init_from(envvar='FLASK_MONITORING_DASHBOARD_CONFIG')
 
     db.init_app(app)
 
@@ -95,6 +99,3 @@ def create_celery_app(app=None):
 
     celery.Task = ContextTask
     return celery
-
-
-celery = create_celery_app()
