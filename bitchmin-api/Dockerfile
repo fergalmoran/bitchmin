@@ -2,7 +2,7 @@ FROM python:3.7
 
 COPY ./requirements.txt /requirements.txt
 RUN apt update && \
-    apt install libblas-dev && \
+    apt install -y libblas-dev && \
     pip install gunicorn
 
 RUN pip install -r requirements.txt
