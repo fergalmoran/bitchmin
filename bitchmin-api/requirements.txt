@@ -1,7 +1,7 @@
 Flask
 Flask-Cors
 Flask-SQLAlchemy
-Flask_Migrate
+Flask-Migrate
 flask_jwt_extended
 Flask-Mail
 Flask-Serialize
@@ -9,8 +9,7 @@ sqlalchemy_utils
 phue
 python-dotenv
 PyJWT
-psycopg2-binary==2.8.6
-Psycopg2
+psycopg2
 pylint
 werkzeug
 celery
@@ -21,8 +20,8 @@ requests
 IPy
 pydig
 twilio
-flask_monitoringdashboard
-jinja2==2.11.1
+# flask_monitoringdashboard
+jinja2
 pytest
 pytest-flask
 pytest-flask-sqlalchemy

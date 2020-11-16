@@ -3,30 +3,31 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { apiConfig } from '@/api/config';
 import { ApiResult, DataApiResult } from '@/api/apiResult';
 import { DnsHost } from '@/models/dnsHost';
+import { DnsZone } from '@/models/dnsZone';
 
 export class DnsApi extends Api {
     constructor(config: AxiosRequestConfig) {
-    // NEVER FORGET THE SUPER
         super(config);
     }
 
     public async updateDnsRecord(
+        zoneId: number,
         hostName: string,
-        ipAddress: string,
+        ipAddress: string
     ): Promise<DataApiResult<DnsHost>> {
-        const result = await this.post<
-            ApiResult,
+        const result = await this.post<ApiResult,
             any,
-            AxiosResponse<DataApiResult<DnsHost>>
-        >('/dns/', {
-            host: hostName,
-            ip: ipAddress,
-        });
+            AxiosResponse<DataApiResult<DnsHost>>>('/dns/host/', {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+                zone_id: zoneId,
+                name: hostName,
+                ip: ipAddress
+            });
         return result.data;
     }
 
     public async deleteDnsRecord(
-        hostName: string,
+        hostName: string
     ): Promise<number> {
         const result = await this.delete(`/dns/?host=${hostName}`);
         return result.status;
@@ -34,31 +35,34 @@ export class DnsApi extends Api {
 
     public async refreshDnsRecord(
         hostName: string,
-        ip: string,
+        ip: string
     ): Promise<DataApiResult<DnsHost>> {
-        const result = await this.post<
-            ApiResult,
+        const result = await this.post<ApiResult,
             any,
-            AxiosResponse<DataApiResult<DnsHost>>
-        >('/dns/refresh', {
-            host: hostName,
-            ip,
-        });
+            AxiosResponse<DataApiResult<DnsHost>>>(
+                '/dns/refresh', {
+                    host: hostName,
+                    ip
+                }
+            );
         return result.data;
     }
 
     public async verifyDnsRecord(
         hostName: string,
-        ip: string,
+        ip: string
     ): Promise<DataApiResult<string>> {
-        const result = await this.post<
-            ApiResult,
+        const result = await this.post<ApiResult,
             any,
-            AxiosResponse<DataApiResult<string>>
-        >('/dns/check/', {
-            host: hostName,
-            ip,
-        });
+            AxiosResponse<DataApiResult<string>>>('/dns/check/', {
+                host: hostName,
+                ip
+            });
+        return result.data;
+    }
+
+    public async getZones(): Promise<DnsZone[]> {
+        const result = await this.get<DnsZone[]>('/dns/zones');
         return result.data;
     }
 
@@ -77,4 +81,5 @@ export class DnsApi extends Api {
         return result.data.payload;
     }
 }
+
 export const dnsApi = new DnsApi(apiConfig);

@@ -9,7 +9,6 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-import flask_monitoringdashboard as dashboard
 
 from app.conf import load_config
 from app.utils.encoders import IPAddressFieldEncoder
@@ -71,8 +70,6 @@ def create_app(app_name='bitchmin'):
             app.logger.addHandler(file_handler)
 
     app.json_encoder = IPAddressFieldEncoder
-    dashboard.bind(app)
-    dashboard.config.init_from(envvar='FLASK_MONITORING_DASHBOARD_CONFIG')
 
     db.init_app(app)
 

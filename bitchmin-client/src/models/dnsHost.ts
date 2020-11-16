@@ -1,6 +1,7 @@
 export interface DnsHost {
     id: number;
-    host: string;
+    zone_id: number;
+    name: string;
     ip: string;
     created_on: Date;
 }

@@ -1,8 +1,8 @@
 """Initial migration.
 
-Revision ID: ca46ac8d1ba5
+Revision ID: b780f60b3019
 Revises: 
-Create Date: 2020-11-09 18:33:08.250178
+Create Date: 2020-11-16 13:00:43.391154
 
 """
 from alembic import op
@@ -10,9 +10,8 @@ import sqlalchemy as sa
 import sqlalchemy_utils
 
 
-
 # revision identifiers, used by Alembic.
-revision = 'ca46ac8d1ba5'
+revision = 'b780f60b3019'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -46,6 +45,8 @@ def upgrade():
     sa.Column('zone_id', sa.Integer(), nullable=True),
     sa.Column('host', sa.String(length=255), nullable=False),
     sa.Column('ip', sqlalchemy_utils.types.ip_address.IPAddressType(length=255), nullable=False),
+    sa.Column('type', sa.String(length=10), nullable=False),
+    sa.Column('ttl', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['zone_id'], ['dns_zones.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('host')
@@ -54,8 +55,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_on', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_on', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
-    sa.Column('ip', sqlalchemy_utils.types.ip_address.IPAddressType(length=255), nullable=False),
     sa.Column('host', sa.String(length=255), nullable=False),
+    sa.Column('ip', sqlalchemy_utils.types.ip_address.IPAddressType(length=255), nullable=False),
     sa.Column('zone_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['zone_id'], ['dns_zones.id'], ),
     sa.PrimaryKeyConstraint('id'),

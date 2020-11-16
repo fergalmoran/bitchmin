@@ -22,7 +22,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="host in records" :key="host.id">
-                                <td>{{host.host}}</td>
+                                <td>{{ host.name }}</td>
                                 <td>{{host.ip}}</td>
                                 <td>{{host.created_on | formatDate}}</td>
                                 <td>
@@ -87,7 +87,7 @@ export default class DnsRecordsList extends Vue {
     async refreshRecord(host: DnsHost) {
         this.callInProgress = true;
         console.log('DnsRecordsList', 'refreshRecord', host);
-        const result = await dnsApi.refreshDnsRecord(host.host, host.ip);
+        const result = await dnsApi.refreshDnsRecord(host.name, host.ip);
         if (result.status === 'success') {
             Vue.toasted.success('Refreshed successfully');
         }
@@ -96,7 +96,7 @@ export default class DnsRecordsList extends Vue {
 
     async verifyRecord(record: DnsHost) {
         this.callInProgress = true;
-        const result = await dnsApi.verifyDnsRecord(record.host, record.ip);
+        const result = await dnsApi.verifyDnsRecord(record.name, record.ip);
         if (result.status === 'success') {
             Vue.toasted.success(result.payload || 'Record checks out');
         } else {
@@ -108,10 +108,10 @@ export default class DnsRecordsList extends Vue {
 
     async deleteRecord(record: DnsHost) {
         this.callInProgress = true;
-        const result = await dnsApi.deleteDnsRecord(record.host);
+        const result = await dnsApi.deleteDnsRecord(record.name);
         if (result === 200) {
             Vue.toasted.success('Record deleted successfully');
-            this.records = this.records.filter((t) => t.host !== record.host);
+            this.records = this.records.filter((t) => t.name !== record.name);
             console.log('DnsRecordsList', 'delete', this.records);
         }
         this.callInProgress = false;

@@ -88,7 +88,7 @@ def check_host_record():
     }), 200
 
 
-@api.route('/dns/', methods=['DELETE'])
+@api.route('/dns/host/', methods=['DELETE'])
 @jwt_required
 def delete_dns_record():
     host = request.args['host']
@@ -99,7 +99,7 @@ def delete_dns_record():
         os.getenv('DNS_KEY'),
         host)
 
-    records = db.session(DnsHost).query.filter_by(host=host).all()
+    records = db.session.query(DnsHost).filter_by(host=host).all()
     for record in records:
         db.session.delete(record)
     db.session.commit()
@@ -114,7 +114,7 @@ def delete_dns_record():
     }), 500
 
 
-@api.route('/dns/', methods=['POST'])
+@api.route('/dns/host/', methods=['POST'])
 @jwt_required
 def update_dns():
     user = get_current_user()
@@ -133,14 +133,22 @@ def update_dns():
             'payload': '{} is not a valid IP address'.format(ip)
         }), 400
 
-    hostname = args['host']
+    hostname = args['name']
     if not is_valid_hostname(hostname):
         return jsonify({
             'status': 'error',
             'payload': '{} is not a valid IP address'.format(hostname)
         }), 400
 
-    count = db.session(DnsHost).query.filter_by(host=hostname).count()
+    zone = db.session.query(DnsZone).get(args['zone_id'])
+    if not zone:
+        return jsonify({
+            'status': 'error',
+            'payload': 'Zone {} does not exist'.format(args['zone_id'])
+        }), 400
+
+    count = db.session.query(DnsHost).filter_by(host=hostname).count()
+    # count = db.session(DnsHost).query.filter_by(host=hostname).count()
     if count != 0:
         logger.warning('HOST {} is already in the system'.format(hostname))
         return jsonify({
@@ -148,21 +156,26 @@ def update_dns():
             'payload': 'HOST {} is already in the system'.format(hostname)
         }), 409
 
-    update_result = dnsupdate.update_dns(
+    update_result = True or dnsupdate.update_dns(
         os.getenv('DNS_SERVER'),
         os.getenv('DNS_ZONE'),
         os.getenv('DNS_KEY'),
-        args['host'],
+        args['zone_id'],
+        args['name'],
         args['ip'])
 
     if update_result:
-        update = db.session(DnsHost)(args['host'], ip, user)
-        db.session.add(update)
+        host = DnsHost(
+            zone,
+            args['name'],
+            args['ip']
+        )
+        db.session.add(host)
         db.session.commit()
 
         return jsonify({
             'status': 'success',
-            'payload': update
+            'payload': host.to_dict()
         })
 
     return jsonify({

@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.8-alpine
 
 RUN apk add --update alpine-sdk
 
@@ -9,9 +9,9 @@ COPY . /app
 WORKDIR /app
 
 ENV DNS_PORT 53
-ENV WORKER_PORT 10054
+ENV WORKER_PORT 54
 
 EXPOSE 53
-EXPOSE 10054
+EXPOSE 54
 
 CMD [ "python", "./server.py" ]

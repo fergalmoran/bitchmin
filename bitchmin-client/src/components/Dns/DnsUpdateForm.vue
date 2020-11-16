@@ -28,16 +28,20 @@
     </v-card>
 </template>
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator';
+import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
 import { dnsApi } from '@/api';
 import { DnsHost } from '@/models/dnsHost';
 import { DataApiResult } from '@/api/apiResult';
+import { DnsZone } from '@/models/dnsZone';
 
 @Component({
     name: 'DnsUpdateForm',
+    props: ['zone']
 })
 export default class DnsUpdateForm extends Vue {
-    msg = '';
+
+    @Prop({ required: true })
+    public zone!: DnsZone;
 
     error = '';
 
@@ -66,23 +70,19 @@ export default class DnsUpdateForm extends Vue {
             (v && v.length < 16) || 'IP address cannot exceed 16 characters',
     ];
 
-    @PropSync('inrecords')
-    public records!: DnsHost[];
-
     validate() {
         // this.$refs.form.validate();
     }
 
     processUpdate() {
         dnsApi
-            .updateDnsRecord(this.hostName, this.ipAddress)
+            .updateDnsRecord(this.zone.id, this.hostName, this.ipAddress)
             .then((r: DataApiResult<DnsHost>) => {
                 if (r.status === 'success') {
                     this.error = '';
                     Vue.toasted.success('Update successful');
                     if (r.payload) {
-                        this.records.unshift(r.payload);
-                        this.$emit('update:inrecords', this.records);
+                        this.$emit('hostAdded', r.payload);
                     }
                     this.ipAddress = '';
                     this.hostName = '';

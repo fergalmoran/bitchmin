@@ -13,14 +13,14 @@ from servers.worker_server import WorkerServerFactory
 
 logging.basicConfig(level=logging.DEBUG)
 
-PORT = os.environ.get('DNS_PORT') or 10053
-WORKER_PORT = os.environ.get('WORKER_PORT') or 10054
-API_HOST = os.environ.get('API_HOST') or 'http://localhost:5000/dns/zones'
+PORT = int(os.environ.get('DNS_PORT') or 10053)
+WORKER_PORT = int(os.environ.get('WORKER_PORT') or 10054)
+API_HOST = os.environ.get('API_HOST') or 'http://localhost:5000'
 
 
 # TODO: This smells
 def get_zones():
-    response = requests.get(API_HOST)
+    response = requests.get('{}/dns/zones'.format(API_HOST))
     zones = Zone.from_json(response.text)
     return {
         zone.name: zone

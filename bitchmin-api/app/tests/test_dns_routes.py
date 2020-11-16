@@ -1,7 +1,4 @@
 import json
-from datetime import timedelta
-
-from app.models import User
 
 
 class TestUserRoutes:

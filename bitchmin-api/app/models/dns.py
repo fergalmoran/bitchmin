@@ -56,6 +56,7 @@ class DnsZone(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
     def to_dict(self):
         ret_data = {
+            'id': self.id,
             'name': self.zone_name,
             'serial': self.serial,
             'admin': self.admin,
@@ -98,10 +99,12 @@ class DnsHost(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'name': self.host,
             'type': self.type,
             'ttl': self.ttl,
             'ip': self.ip,
+            'created_on': self.created_on,
         }
 
 

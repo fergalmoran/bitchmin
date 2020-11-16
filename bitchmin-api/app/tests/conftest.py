@@ -2,7 +2,7 @@ import pytest
 
 from app import create_app
 from app import db as _db
-from seeder import DbSeeder
+from .seeder import DbSeeder
 
 
 @pytest.fixture()
