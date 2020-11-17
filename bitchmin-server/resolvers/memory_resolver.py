@@ -9,6 +9,14 @@ class InvalidZoneException(Exception):
 
 
 class Resolver:
+    """
+    A resolver which calculates the answers to certain queries based on the
+    query type and name.
+    """
+
+    def __init__(self, zones):
+        self._zones = zones
+
     @staticmethod
     def _build_host(record_type, host, ip, ttl):
         return {
@@ -19,15 +27,44 @@ class Resolver:
             },
         }
 
+    def _gen_axfr(self, zone_name):
+        zone = self._zones[zone_name]
+
+        records = []
+        soa = dns.RRHeader(
+            name=zone.name,
+            type=dns.SOA,
+            cls=dns.IN,
+            ttl=86400,
+            auth=False,
+            payload=dns.Record_SOA(
+                mname=next(iter(zone.nameservers)),
+                rname='Ferg@lMoran.me',  # TODO: store this
+                serial=zone.serial,
+                refresh=10,
+                retry=10,
+                expire=2000,
+                minimum=100,
+                ttl=100)
+        )
+
+        records.append(soa)
+        for h in zone.hosts:
+            host = zone.hosts[h]
+            record = dns.RRHeader(
+                '{}.{}'.format(host.name, zone.name),
+                dns.A,
+                dns.IN,
+                host.ttl,
+                dns.Record_A(host.ip, host.ttl))
+            records.append(record)
+
+        records.append(soa)
+
+        return records, (), ()
+
 
 class MemoryResolver(Resolver):
-    """
-    A resolver which calculates the answers to certain queries based on the
-    query type and name.
-    """
-
-    def __init__(self, zones):
-        self._zones = zones
 
     def add_host(self, record_type, zone, host, ip, ttl):
         if self._zones[zone]:
@@ -64,17 +101,24 @@ class MemoryResolver(Resolver):
 
         return None
 
-    def _get_response(self, zone, query):
+    def _get_response(self, zone_name, query):
         """
         Calculate the response to a query.
         """
         try:
-            host = self._parse_host(zone, str(query.name))
-            record = self._zones[zone].hosts[host]
+            # try named domain requests first
+            if zone_name not in self._zones:
+                return None
+
+            if query.type == dns.AXFR:
+                return self._gen_axfr(zone_name)
+
+            host = self._parse_host(zone_name, str(query.name))
+            record = self._zones[zone_name].hosts[host]
 
             if query.type == dns.NS:
                 payload = dns.Record_NS(
-                    name=zone['nameservers'][0],
+                    name=zone_name['nameservers'][0],
                     ttl=record['ttl']
                 )
             else:
@@ -84,7 +128,7 @@ class MemoryResolver(Resolver):
                 )
 
             answer = dns.RRHeader(
-                name=zone,
+                name=zone_name,
                 payload=payload,
                 ttl=record.ttl
             )

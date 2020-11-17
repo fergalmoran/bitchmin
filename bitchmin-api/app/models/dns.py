@@ -26,7 +26,7 @@ class DnsNameServer(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
     def to_dict(self):
         return {
-            'host': self.host,
+            'name': self.host,
             'ip': self.ip
         }
 

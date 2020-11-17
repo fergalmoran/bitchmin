@@ -3,11 +3,12 @@ from types import SimpleNamespace
 
 
 class Zone(object):
-    def __init__(self, serial, name, admin, hosts):
+    def __init__(self, serial, name, admin, hosts, nameservers):
         self._serial = serial
         self._name = name
         self._admin = admin
         self._hosts = hosts
+        self._nameservers = nameservers
 
     @staticmethod
     def from_json(data):
@@ -22,7 +23,11 @@ class Zone(object):
                     h.name,
                     h.ttl,
                     h.type
-                ) for h in x.hosts}
+                ) for h in x.hosts},
+                {n.name: Nameserver(
+                    n.ip,
+                    n.name
+                ) for n in x.nameservers}
             ) for x in zones]
         except Exception as e:
             print(e)
@@ -42,6 +47,25 @@ class Zone(object):
     @property
     def hosts(self):
         return self._hosts
+
+    @property
+    def nameservers(self):
+        return self._nameservers
+
+
+class Nameserver(object):
+
+    def __init__(self, ip, name):
+        self._ip = ip
+        self._name = name
+
+    @property
+    def ip(self):
+        return self._ip
+
+    @property
+    def name(self):
+        return self._name
 
 
 class Host(object):

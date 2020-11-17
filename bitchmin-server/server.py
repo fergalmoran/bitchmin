@@ -24,7 +24,8 @@ def get_zones():
     zones = Zone.from_json(response.text)
     return {
         zone.name: zone
-        for zone in zones}
+        for zone in zones
+    }
 
 
 def main():
