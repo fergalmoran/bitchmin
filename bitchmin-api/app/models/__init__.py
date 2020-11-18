@@ -1,2 +1,2 @@
-from .dns import DnsZone, DnsNameServer, DnsHost
+from .dns import DnsZone, DnsNameServer, DnsMailExchanger, DnsHost
 from .user import User

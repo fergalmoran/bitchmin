@@ -11,30 +11,6 @@ from app.models._basemodel import _BaseModelMixin
 
 
 @dataclass
-class DnsNameServer(db.Model, _BaseModelMixin, FlaskSerializeMixin):
-    __tablename__ = 'dns_nameservers'
-
-    host = db.Column(db.String(255), unique=True, nullable=False)
-    ip = db.Column(IPAddressType(255), nullable=False)
-    ttl = db.Column(db.Integer(), nullable=False, default=30)
-    zone_id = db.Column(db.Integer, db.ForeignKey('dns_zones.id'))
-    zone = relationship("DnsZone", back_populates="nameservers")
-
-    def __init__(self, zone, host, ip, ttl=30):
-        self.zone = zone
-        self.host = host
-        self.ip = ip
-        self.ttl = ttl
-
-    def to_dict(self):
-        return {
-            'name': self.host,
-            'ip': self.ip,
-            'ttl': self.ttl
-        }
-
-
-@dataclass
 class DnsZone(db.Model, _BaseModelMixin, FlaskSerializeMixin):
     __tablename__ = 'dns_zones'
     relationship_fields = ['nameservers', 'hosts']
@@ -64,6 +40,7 @@ class DnsZone(db.Model, _BaseModelMixin, FlaskSerializeMixin):
             'serial': self.serial,
             'admin': self.admin,
             'nameservers': [ns.to_dict() for ns in self.nameservers],
+            'mailexchangers': [mx.to_dict() for mx in self.mailexchangers],
             'hosts': [host.to_dict() for host in self.hosts]
         }
         return ret_data
@@ -77,6 +54,60 @@ class DnsZone(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
     hosts = relationship("DnsHost", back_populates="zone")
     nameservers = relationship("DnsNameServer", back_populates="zone")
+    mailexchangers = relationship("DnsMailExchanger", back_populates="zone")
+
+
+@dataclass
+class DnsNameServer(db.Model, _BaseModelMixin, FlaskSerializeMixin):
+    __tablename__ = 'dns_nameservers'
+
+    host = db.Column(db.String(255), unique=True, nullable=False)
+    ip = db.Column(IPAddressType(255), nullable=False)
+    ttl = db.Column(db.Integer(), nullable=False, default=30)
+    zone_id = db.Column(db.Integer, db.ForeignKey('dns_zones.id'))
+    zone = relationship("DnsZone", back_populates="nameservers")
+
+    def __init__(self, zone, host, ip, ttl=30):
+        self.zone = zone
+        self.host = host
+        self.ip = ip
+        self.ttl = ttl
+
+    def to_dict(self):
+        return {
+            'name': self.host,
+            'ip': self.ip,
+            'ttl': self.ttl
+        }
+
+
+@dataclass
+class DnsMailExchanger(db.Model, _BaseModelMixin, FlaskSerializeMixin):
+    __tablename__ = 'dns_mailexchangers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    zone_id = db.Column(db.Integer, db.ForeignKey('dns_zones.id'))
+    zone = relationship("DnsZone", back_populates="mailexchangers")
+
+    host = db.Column(db.String(255), unique=True, nullable=False)
+    preference = db.Column(db.Integer, nullable=False)
+    ttl = db.Column(db.Integer(), nullable=False)
+
+    def __init__(self, zone, host, preference, ttl=30):
+        self.zone = zone
+        self.host = host
+        self.ttl = ttl
+        self.preference = preference
+        pass
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.host,
+            'preference': self.preference,
+            'ttl': self.ttl,
+            'created_on': self.created_on,
+        }
 
 
 @dataclass

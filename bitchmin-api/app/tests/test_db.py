@@ -1,6 +1,6 @@
 import uuid
 
-from app.models import User, DnsZone, DnsNameServer, DnsHost
+from app.models import User, DnsZone, DnsNameServer, DnsHost, DnsMailExchanger
 
 
 class TestDatabaseUpdate:
@@ -8,6 +8,7 @@ class TestDatabaseUpdate:
         assert db.session.query(User).count() == 1
         assert db.session.query(DnsZone).count() == 1
         assert db.session.query(DnsNameServer).count() == 2
+        assert db.session.query(DnsMailExchanger).count() == 10
         assert db.session.query(DnsHost).count() == 10
 
     def test_serial_on_create(self, db) -> None:

@@ -1,4 +1,4 @@
-from app.models import DnsZone, User, DnsHost, DnsNameServer
+from app.models import DnsZone, User, DnsHost, DnsNameServer, DnsMailExchanger
 
 
 class DbSeeder(object):
@@ -28,16 +28,16 @@ class DbSeeder(object):
             )
             self._db.session.add(ns)
 
-    def _create_hosts(self, zone):
+    def _create_mailexchangers(self, zone):
         for i in range(1, 11):
-            host = DnsHost(
+            host = DnsMailExchanger(
                 zone,
-                'host-{}'.format(i),
-                '10.1.1.{}'.format(i)
+                'mail-{}.bitchmints.com'.format(i),
+                i
             )
             self._db.session.add(host)
 
-    def _create_mx_records(self, zone):
+    def _create_hosts(self, zone):
         for i in range(1, 11):
             host = DnsHost(
                 zone,
@@ -53,6 +53,7 @@ class DbSeeder(object):
         self._create_user()
         z = self._create_zone()
         self._create_nameservers(z)
+        self._create_mailexchangers(z)
         self._create_hosts(z)
 
         self._db.session.commit()
