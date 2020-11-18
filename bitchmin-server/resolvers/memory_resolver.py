@@ -136,37 +136,62 @@ class MemoryResolver(Resolver):
             if zone_name not in self._zones:
                 return None
 
+            host = self._parse_host(zone_name, str(query.name))
+            answers = []
+            authority = []
+            additional = []
+
             if query.type == dns.AXFR:
                 return self._gen_axfr(zone_name)
 
-            host = self._parse_host(zone_name, str(query.name))
-            record = self._zones[zone_name].hosts[host]
-
             if query.type == dns.NS:
-                payload = dns.Record_NS(
-                    name=zone_name['nameservers'][0],
-                    ttl=record['ttl']
-                )
+                self._get_nameservers(answers, query, zone_name)
+            elif query.type == dns.MX:
+                self._get_mailexchangers(answers, query, zone_name)
             else:
-                payload = dns.Record_A(
-                    address=record.ip,
+                record = self._zones[zone_name].hosts[host]
+                answers.append(dns.RRHeader(
+                    name=str(query.name),
+                    payload=dns.Record_A(
+                        address=record.ip,
+                        ttl=record.ttl
+                    ),
                     ttl=record.ttl
-                )
-
-            answer = dns.RRHeader(
-                name=str(query.name),
-                payload=payload,
-                ttl=record.ttl
-            )
-
-            answers = [answer]
-            authority = []
-            additional = []
+                ))
 
             return answers, authority, additional
 
         except KeyError:
             return None
+
+    def _get_nameservers(self, answers, query, zone_name):
+        for ns in self._zones[zone_name].nameservers:
+            answers.append(
+                dns.RRHeader(
+                    name=str(query.name),
+                    type=dns.NS,
+                    ttl=self._zones[zone_name].nameservers[ns].ttl,
+                    payload=dns.Record_NS(
+                        name=self._zones[zone_name].nameservers[ns].name,
+                        ttl=self._zones[zone_name].nameservers[ns].ttl
+                    )
+                )
+            )
+
+    def _get_mailexchangers(self, answers, query, zone_name):
+        for mx in self._zones[zone_name].mailexchangers:
+            answers.append(
+                dns.RRHeader(
+                    name=str(query.name),
+                    type=dns.MX,
+                    ttl=self._zones[zone_name].mailexchangers[mx].ttl,
+                    payload=dns.Record_MX(
+                        name=self._zones[zone_name].mailexchangers[mx].name,
+                        ttl=self._zones[zone_name].mailexchangers[mx].ttl,
+                        preference=self._zones[zone_name].mailexchangers[mx].preference
+                    )
+                )
+            )
 
     def query(self, query, timeout=None):
         """

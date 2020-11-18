@@ -3,12 +3,13 @@ from types import SimpleNamespace
 
 
 class Zone(object):
-    def __init__(self, serial, name, admin, hosts, nameservers):
+    def __init__(self, serial, name, admin, hosts, nameservers, mailexchangers):
         self._serial = serial
         self._name = name
         self._admin = admin
         self._hosts = hosts
         self._nameservers = nameservers
+        self._mailexchangers = mailexchangers
 
     @staticmethod
     def from_json(data):
@@ -24,11 +25,16 @@ class Zone(object):
                     h.ttl,
                     h.type
                 ) for h in x.hosts},
-                {n.name: Nameserver(
-                    n.ip,
-                    n.name,
-                    n.ttl
-                ) for n in x.nameservers}
+                {ns.name: Nameserver(
+                    ns.ip,
+                    ns.name,
+                    ns.ttl
+                ) for ns in x.nameservers},
+                {mx.name: MailExchanger(
+                    mx.name,
+                    mx.preference,
+                    mx.ttl
+                ) for mx in x.mailexchangers}
             ) for x in zones]
         except Exception as e:
             print(e)
@@ -53,6 +59,10 @@ class Zone(object):
     def nameservers(self):
         return self._nameservers
 
+    @property
+    def mailexchangers(self):
+        return self._mailexchangers
+
 
 class Nameserver(object):
 
@@ -68,6 +78,26 @@ class Nameserver(object):
     @property
     def name(self):
         return self._name
+
+    @property
+    def ttl(self):
+        return self._ttl
+
+
+class MailExchanger(object):
+
+    def __init__(self, name, preference, ttl):
+        self._name = name
+        self._preference = preference
+        self._ttl = ttl
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def preference(self):
+        return self._preference
 
     @property
     def ttl(self):

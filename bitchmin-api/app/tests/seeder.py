@@ -23,7 +23,7 @@ class DbSeeder(object):
         for i in range(1, 3):
             ns = DnsNameServer(
                 zone,
-                'host-{}.{}'.format(i, zone.zone_name),
+                'ns-{}.{}'.format(i, zone.zone_name),
                 '10.1.1.10{}'.format(i)
             )
             self._db.session.add(ns)
