@@ -16,18 +16,21 @@ class DnsNameServer(db.Model, _BaseModelMixin, FlaskSerializeMixin):
 
     host = db.Column(db.String(255), unique=True, nullable=False)
     ip = db.Column(IPAddressType(255), nullable=False)
+    ttl = db.Column(db.Integer(), nullable=False, default=30)
     zone_id = db.Column(db.Integer, db.ForeignKey('dns_zones.id'))
     zone = relationship("DnsZone", back_populates="nameservers")
 
-    def __init__(self, zone, host, ip):
+    def __init__(self, zone, host, ip, ttl=30):
         self.zone = zone
         self.host = host
         self.ip = ip
+        self.ttl = ttl
 
     def to_dict(self):
         return {
             'name': self.host,
-            'ip': self.ip
+            'ip': self.ip,
+            'ttl': self.ttl
         }
 
 

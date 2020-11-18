@@ -23,13 +23,21 @@ class DbSeeder(object):
         for i in range(1, 3):
             ns = DnsNameServer(
                 zone,
-                'host-{}'.format(i),
+                'host-{}.{}'.format(i, zone.zone_name),
                 '10.1.1.10{}'.format(i)
-
             )
             self._db.session.add(ns)
 
     def _create_hosts(self, zone):
+        for i in range(1, 11):
+            host = DnsHost(
+                zone,
+                'host-{}'.format(i),
+                '10.1.1.{}'.format(i)
+            )
+            self._db.session.add(host)
+
+    def _create_mx_records(self, zone):
         for i in range(1, 11):
             host = DnsHost(
                 zone,

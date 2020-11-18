@@ -36,7 +36,7 @@ class Resolver:
             type=dns.SOA,
             cls=dns.IN,
             ttl=86400,
-            auth=False,
+            auth=True,
             payload=dns.Record_SOA(
                 mname=next(iter(zone.nameservers)),
                 rname='Ferg@lMoran.me',  # TODO: store this
@@ -49,6 +49,32 @@ class Resolver:
         )
 
         records.append(soa)
+
+        n = next(iter(zone.nameservers))
+        record = dns.Record_NS(
+            name=zone.nameservers[n].name,
+            ttl=zone.nameservers[n].ttl
+        )
+
+        authority = [
+            dns.RRHeader(
+                zone.name,
+                type=dns.NS,
+                ttl=0xFFFFFFFF,
+                auth=True,
+                payload=record,
+            )
+        ]
+        records.append(
+            dns.RRHeader(
+                zone.name,
+                type=dns.NS,
+                cls=dns.IN,
+                ttl=700,
+                auth=False,
+                payload=record,
+            )
+        )
         for h in zone.hosts:
             host = zone.hosts[h]
             record = dns.RRHeader(
@@ -61,7 +87,7 @@ class Resolver:
 
         records.append(soa)
 
-        return records, (), ()
+        return records, authority, ()
 
 
 class MemoryResolver(Resolver):
@@ -128,7 +154,7 @@ class MemoryResolver(Resolver):
                 )
 
             answer = dns.RRHeader(
-                name=zone_name,
+                name=str(query.name),
                 payload=payload,
                 ttl=record.ttl
             )
@@ -149,13 +175,13 @@ class MemoryResolver(Resolver):
         """
 
         logging.info(query)
-        name, zone = self._get_authoritative_zone(query)
-        if zone and name:
-            logging.debug('BitchNS: Authoritative for {}'.format(name))
-            result = self._get_response(name, query)
+        zone_name, zone = self._get_authoritative_zone(query)
+        if zone and zone_name:
+            logging.debug('BitchNS: Authoritative for {}'.format(zone_name))
+            result = self._get_response(zone_name, query)
             if result:
-                logging.debug('BitchNS: Resolving {} to {}'.format(name, result))
+                logging.debug('BitchNS: Resolving {} to {}'.format(zone_name, result))
                 return defer.succeed(result)
-            logging.debug('BitchNS: Host {} not found in zone {}'.format(name, zone))
 
+        logging.error('Query failure')
         return defer.fail(error.DomainError())

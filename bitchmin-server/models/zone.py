@@ -26,7 +26,8 @@ class Zone(object):
                 ) for h in x.hosts},
                 {n.name: Nameserver(
                     n.ip,
-                    n.name
+                    n.name,
+                    n.ttl
                 ) for n in x.nameservers}
             ) for x in zones]
         except Exception as e:
@@ -55,9 +56,10 @@ class Zone(object):
 
 class Nameserver(object):
 
-    def __init__(self, ip, name):
+    def __init__(self, ip, name, ttl):
         self._ip = ip
         self._name = name
+        self._ttl = ttl
 
     @property
     def ip(self):
@@ -66,6 +68,10 @@ class Nameserver(object):
     @property
     def name(self):
         return self._name
+
+    @property
+    def ttl(self):
+        return self._ttl
 
 
 class Host(object):
