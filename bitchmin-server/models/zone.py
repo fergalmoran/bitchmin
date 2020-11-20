@@ -3,13 +3,14 @@ from types import SimpleNamespace
 
 
 class Zone(object):
-    def __init__(self, serial, name, admin, hosts, nameservers, mailexchangers):
+    def __init__(self, serial, name, admin, hosts, nameservers, mailexchangers, ttl=30):
         self._serial = serial
         self._name = name
         self._admin = admin
         self._hosts = hosts
         self._nameservers = nameservers
         self._mailexchangers = mailexchangers
+        self._ttl = ttl
 
     @staticmethod
     def from_json(data):
@@ -62,6 +63,10 @@ class Zone(object):
     @property
     def mailexchangers(self):
         return self._mailexchangers
+
+    @property
+    def ttl(self):
+        return self._ttl
 
 
 class Nameserver(object):

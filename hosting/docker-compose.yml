@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  server:
+    image: fergalmoran/bitchmin-server
+    ports:
+      - "53:53"
+    environment:
+      - API_HOST=https://api.fergl.ie

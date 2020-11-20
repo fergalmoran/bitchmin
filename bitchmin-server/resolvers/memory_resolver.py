@@ -1,7 +1,13 @@
 import requests
-from twisted.internet import defer
+from twisted.internet import defer, reactor
 from twisted.names import dns, error
 import logging
+
+from twisted.plugins.twisted_reactors import wx
+
+from models.zone import Zone
+
+TIMER_ID = 100  # pick a number
 
 
 class InvalidZoneException(Exception):
@@ -14,8 +20,10 @@ class Resolver:
     query type and name.
     """
 
-    def __init__(self, zones):
-        self._zones = zones
+    def __init__(self, api_host):
+        self._api_host = api_host
+        self._zones = self.load_zones(api_host)
+        self.reload_zones()
 
     @staticmethod
     def _build_host(record_type, host, ip, ttl):
@@ -27,6 +35,20 @@ class Resolver:
             },
         }
 
+    @staticmethod
+    def load_zones(api_host):
+        response = requests.get('{}/dns/zones'.format(api_host))
+        zones = Zone.from_json(response.text)
+        return {
+            zone.name: zone
+            for zone in zones
+        }
+
+    def reload_zones(self):
+        logging.debug('Reloading zones')
+        self._zones = Resolver.load_zones(self._api_host)
+        reactor.callLater(60, self.reload_zones)
+
     def _gen_axfr(self, zone_name):
         zone = self._zones[zone_name]
 
@@ -35,7 +57,7 @@ class Resolver:
             name=zone.name,
             type=dns.SOA,
             cls=dns.IN,
-            ttl=86400,
+            ttl=zone.ttl,
             auth=True,
             payload=dns.Record_SOA(
                 mname=next(iter(zone.nameservers)),
@@ -71,7 +93,7 @@ class Resolver:
                 type=dns.NS,
                 cls=dns.IN,
                 ttl=700,
-                auth=False,
+                auth=True,
                 payload=record,
             )
         )
@@ -79,10 +101,11 @@ class Resolver:
             host = zone.hosts[h]
             record = dns.RRHeader(
                 '{}.{}'.format(host.name, zone.name),
-                dns.A,
-                dns.IN,
-                host.ttl,
-                dns.Record_A(host.ip, host.ttl))
+                type=dns.A,
+                cls=dns.IN,
+                ttl=host.ttl,
+                auth=True,
+                payload=dns.Record_A(host.ip, host.ttl))
             records.append(record)
 
         records.append(soa)
@@ -152,6 +175,7 @@ class MemoryResolver(Resolver):
                 record = self._zones[zone_name].hosts[host]
                 answers.append(dns.RRHeader(
                     name=str(query.name),
+                    auth=True,
                     payload=dns.Record_A(
                         address=record.ip,
                         ttl=record.ttl
@@ -171,6 +195,7 @@ class MemoryResolver(Resolver):
                     name=str(query.name),
                     type=dns.NS,
                     ttl=self._zones[zone_name].nameservers[ns].ttl,
+                    auth=True,
                     payload=dns.Record_NS(
                         name=self._zones[zone_name].nameservers[ns].name,
                         ttl=self._zones[zone_name].nameservers[ns].ttl
@@ -185,6 +210,7 @@ class MemoryResolver(Resolver):
                     name=str(query.name),
                     type=dns.MX,
                     ttl=self._zones[zone_name].mailexchangers[mx].ttl,
+                    auth=True,
                     payload=dns.Record_MX(
                         name=self._zones[zone_name].mailexchangers[mx].name,
                         ttl=self._zones[zone_name].mailexchangers[mx].ttl,
@@ -200,13 +226,17 @@ class MemoryResolver(Resolver):
         """
 
         logging.info(query)
-        zone_name, zone = self._get_authoritative_zone(query)
-        if zone and zone_name:
-            logging.debug('BitchNS: Authoritative for {}'.format(zone_name))
-            result = self._get_response(zone_name, query)
-            if result:
-                logging.debug('BitchNS: Resolving {} to {}'.format(zone_name, result))
-                return defer.succeed(result)
+        try:
+            zone_name, zone = self._get_authoritative_zone(query)
+            if zone and zone_name:
+                logging.debug('BitchNS: Authoritative for {}'.format(zone_name))
+                result = self._get_response(zone_name, query)
+                if result:
+                    logging.debug('BitchNS: Resolving {} to {}'.format(zone_name, result))
+                    return defer.succeed(result)
 
-        logging.error('Query failure')
-        return defer.fail(error.DomainError())
+            logging.error('Query failure')
+            return defer.fail(error.DomainError())
+        except TypeError as e:
+            logging.error('Invalid query - {}'.format(query))
+            return defer.fail(error.DNSFormatError())

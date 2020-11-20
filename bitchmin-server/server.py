@@ -18,19 +18,8 @@ WORKER_PORT = int(os.environ.get('WORKER_PORT') or 10054)
 API_HOST = os.environ.get('API_HOST') or 'http://localhost:5000'
 
 
-# TODO: This smells
-def get_zones():
-    response = requests.get('{}/dns/zones'.format(API_HOST))
-    zones = Zone.from_json(response.text)
-    return {
-        zone.name: zone
-        for zone in zones
-    }
-
-
 def main():
-    zones = get_zones()
-    memory_resolver = MemoryResolver(zones)
+    memory_resolver = MemoryResolver(API_HOST)
 
     dns_factory = server.DNSServerFactory(
         clients=[
